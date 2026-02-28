@@ -8,13 +8,20 @@ import {
   updateDoc, 
   doc, 
   query, 
-  orderBy 
+  orderBy,
 } from 'firebase/firestore';
 import type { Budget, Expense } from '@/types/budget';
+
+export interface Person {
+  id: string;
+  name: string;
+  createdAt: string;
+}
 
 export function useBudgetData() {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [persons, setPersons] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
 
   // 1. Listen to Budgets Real-time
@@ -44,7 +51,18 @@ export function useBudgetData() {
     return () => unsubscribe();
   }, []);
 
-  // 3. Firebase Actions
+  // 3. Listen to Persons Real-time (sort client-side to avoid Firestore index requirement)
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'persons'), (snapshot) => {
+      const data = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() } as Person))
+        .sort((a, b) => a.name.localeCompare(b.name, 'id'));
+      setPersons(data);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 4. Firebase Actions
   const addBudget = useCallback(async (budget: Omit<Budget, 'id' | 'createdAt'>) => {
     await addDoc(collection(db, 'budgets'), {
       ...budget,
@@ -52,12 +70,38 @@ export function useBudgetData() {
     });
   }, []);
 
-  const addExpense = useCallback(async (expense: Omit<Expense, 'id' | 'createdAt'>) => {
-    await addDoc(collection(db, 'expenses'), {
-      ...expense,
+  const resolvePersonId = useCallback(async (name: string): Promise<string> => {
+    const trimmed = name.trim();
+    // Cek dari state lokal dulu (onSnapshot selalu up-to-date)
+    const existing = persons.find(p => p.name.toLowerCase() === trimmed.toLowerCase());
+    if (existing) return existing.id;
+
+    // Belum ada — buat baru
+    const ref = await addDoc(collection(db, 'persons'), {
+      name: trimmed,
       createdAt: new Date().toISOString(),
     });
-  }, []);
+    return ref.id;
+  }, [persons]);
+
+  const addExpense = useCallback(async (
+    expense: Omit<Expense, 'id' | 'createdAt'> & { personName?: string }
+  ) => {
+    const { personName, ...rest } = expense;
+    let personId: string | undefined;
+    let personNameResolved: string | undefined;
+
+    if (personName && personName.trim()) {
+      personId = await resolvePersonId(personName.trim());
+      personNameResolved = personName.trim();
+    }
+
+    await addDoc(collection(db, 'expenses'), {
+      ...rest,
+      ...(personId ? { personId, personName: personNameResolved } : {}),
+      createdAt: new Date().toISOString(),
+    });
+  }, [resolvePersonId]);
 
   const deleteExpense = useCallback(async (id: string) => {
     await deleteDoc(doc(db, 'expenses', id));
@@ -72,7 +116,7 @@ export function useBudgetData() {
     // Opsional: Hapus juga semua expenses yang terkait budget ini
   }, []);
 
-  // 4. Calculation Functions (Dibutuhkan oleh Index.tsx)
+  // 5. Calculation Functions (Dibutuhkan oleh Index.tsx)
   
   // Total Spent (Gabungan Allocation & Realization)
   const getSpentForBudget = useCallback((budgetId: string) => {
@@ -109,6 +153,7 @@ export function useBudgetData() {
   return { 
     budgets, 
     expenses, 
+    persons,
     loading, 
     addBudget, 
     addExpense, 

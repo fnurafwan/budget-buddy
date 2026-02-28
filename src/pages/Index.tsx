@@ -16,7 +16,7 @@ const Index = () => {
             <div className="p-2 rounded-xl bg-primary text-primary-foreground border-2 border-foreground/10">
               <LayoutDashboard className="h-5 w-5" />
             </div>
-            <h1 className="text-xl font-extrabold tracking-tight">BudgatBadget</h1>
+            <h1 className="text-xl font-extrabold tracking-tight">BujatBajet</h1>
           </div>
           <NewBudgetModal onAdd={addBudget} />
         </div>
