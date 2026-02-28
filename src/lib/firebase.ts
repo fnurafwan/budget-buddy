@@ -2,13 +2,13 @@ import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBC99uNqFGwaDivfgo369Ql9aXCQ2SMiLs",
-  authDomain: "budget-buddy-92c32.firebaseapp.com",
-  projectId: "budget-buddy-92c32",
-  storageBucket: "budget-buddy-92c32.firebasestorage.app",
-  messagingSenderId: "462678414273",
-  appId: "1:462678414273:web:5fcefffc093202ae431540",
-  measurementId: "G-J4Q09NGR5C"
+  apiKey: process.env.NEXT_PUBLIC_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGE_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID
 };
 
 // Singleton pattern agar tidak initialize berkali-kali saat hot-reload
