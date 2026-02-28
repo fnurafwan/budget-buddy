@@ -1152,40 +1152,40 @@ const BudgetDetail = () => {
 
                         <span className="text-sm font-bold text-expense whitespace-nowrap shrink-0">
                           -{fmt(exp.amount)}
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                            {/* Flip type button */}
+                            {flippingId === exp.id ? (
+                              <>
+                                <button
+                                  title={`Ubah ke ${exp.type === 'allocation' ? 'Realization' : 'Allocation'}?`}
+                                  onClick={() => handleFlipType(exp)}
+                                  className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 text-[10px] font-bold flex items-center gap-1"
+                                >
+                                  <Check className="h-3.5 w-3.5" />
+                                  <span className="hidden sm:inline">{exp.type === 'allocation' ? '→REA' : '→ALC'}</span>
+                                </button>
+                                <button onClick={() => setFlippingId(null)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                title={`Ubah ke ${exp.type === 'allocation' ? 'Realization' : 'Allocation'}`}
+                                onClick={() => setFlippingId(exp.id)}
+                                className="p-1.5 rounded-lg hover:bg-amber-500/10 text-muted-foreground hover:text-amber-600"
+                              >
+                                <ArrowRightLeft className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                            <button onClick={() => startEdit(exp)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                            <button onClick={() => deleteExpense(exp.id)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         </span>
 
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                          {/* Flip type button */}
-                          {flippingId === exp.id ? (
-                            <>
-                              <button
-                                title={`Ubah ke ${exp.type === 'allocation' ? 'Realization' : 'Allocation'}?`}
-                                onClick={() => handleFlipType(exp)}
-                                className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 text-[10px] font-bold flex items-center gap-1"
-                              >
-                                <Check className="h-3.5 w-3.5" />
-                                <span className="hidden sm:inline">{exp.type === 'allocation' ? '→REA' : '→ALC'}</span>
-                              </button>
-                              <button onClick={() => setFlippingId(null)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
-                                <X className="h-3 w-3" />
-                              </button>
-                            </>
-                          ) : (
-                            <button
-                              title={`Ubah ke ${exp.type === 'allocation' ? 'Realization' : 'Allocation'}`}
-                              onClick={() => setFlippingId(exp.id)}
-                              className="p-1.5 rounded-lg hover:bg-amber-500/10 text-muted-foreground hover:text-amber-600"
-                            >
-                              <ArrowRightLeft className="h-3.5 w-3.5" />
-                            </button>
-                          )}
-                          <button onClick={() => startEdit(exp)} className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground">
-                            <Pencil className="h-3.5 w-3.5" />
-                          </button>
-                          <button onClick={() => deleteExpense(exp.id)} className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
                       </>
                     )}
                   </motion.div>
