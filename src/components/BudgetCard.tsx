@@ -20,7 +20,7 @@ export function BudgetCard({ budget, spent, allocation, realization }: BudgetCar
   const realPercent = useMemo(() => budget.allocatedAmount > 0 ? Math.min((realization / budget.allocatedAmount) * 100, 100) : 0, [realization, budget.allocatedAmount]);
   const category = CATEGORIES.find(c => c.value === budget.category);
   const IconComp = (icons[budget.icon as keyof typeof icons] as LucideIcon) || icons.CircleDollarSign;
-  const fmt = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
 
   return (
     <motion.div

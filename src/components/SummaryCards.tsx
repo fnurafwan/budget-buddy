@@ -8,7 +8,7 @@ interface SummaryCardsProps {
   remaining: number;
 }
 
-const fmt = (n: number) => n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
 
 export function SummaryCards({ totalBudgeted, totalSpent, remaining }: SummaryCardsProps) {
   const percentSpent = useMemo(() => totalBudgeted > 0 ? Math.min((totalSpent / totalBudgeted) * 100, 100) : 0, [totalBudgeted, totalSpent]);
@@ -24,7 +24,7 @@ export function SummaryCards({ totalBudgeted, totalSpent, remaining }: SummaryCa
         <p className="text-sm font-semibold text-muted-foreground mb-1">Total Balance</p>
         <p className="text-3xl font-extrabold text-income">{fmt(remaining)}</p>
 
-        <div className="grid grid-cols-2 gap-3 mt-4">
+        <div className="grid grid-rows-2 md:grid-cols-2 gap-3 mt-4">
           <div className="card-income rounded-xl p-4">
             <p className="text-xs font-semibold text-income mb-0.5">Income / Budgeted</p>
             <p className="text-lg font-bold text-income">+{fmt(totalBudgeted)}</p>

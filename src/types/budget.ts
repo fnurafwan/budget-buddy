@@ -1,4 +1,4 @@
-export type Category = 'food' | 'travel' | 'savings' | 'entertainment' | 'utilities' | 'shopping' | 'health' | 'education';
+export type Category = 'food' | 'travel' | 'savings' | 'entertainment' | 'utilities' | 'shopping' | 'health' | 'education' | 'thr';
 
 export interface Budget {
   id: string;
@@ -22,6 +22,7 @@ export interface Expense {
 }
 
 export const CATEGORIES: { value: Category; label: string; icon: string; color: string }[] = [
+  { value: 'thr', label: 'THR', icon: 'handCoins', color: 'text-income' },
   { value: 'food', label: 'Food & Dining', icon: 'UtensilsCrossed', color: 'text-warning' },
   { value: 'travel', label: 'Travel', icon: 'Plane', color: 'text-primary' },
   { value: 'savings', label: 'Savings', icon: 'PiggyBank', color: 'text-income' },

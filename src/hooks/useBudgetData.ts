@@ -1,68 +1,123 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { db } from '@/lib/firebase';
+import { 
+  collection, 
+  onSnapshot, 
+  addDoc, 
+  deleteDoc, 
+  updateDoc, 
+  doc, 
+  query, 
+  orderBy 
+} from 'firebase/firestore';
 import type { Budget, Expense } from '@/types/budget';
 
-const MOCK_BUDGETS: Budget[] = [
-  { id: '1', title: 'Groceries', allocatedAmount: 500, category: 'food', icon: 'UtensilsCrossed', createdAt: '2024-01-01' },
-  { id: '2', title: 'Holiday Trip', allocatedAmount: 2000, category: 'travel', icon: 'Plane', createdAt: '2024-01-05' },
-  { id: '3', title: 'Emergency Fund', allocatedAmount: 1000, category: 'savings', icon: 'PiggyBank', createdAt: '2024-01-10' },
-  { id: '4', title: 'Netflix & Games', allocatedAmount: 150, category: 'entertainment', icon: 'Gamepad2', createdAt: '2024-01-12' },
-  { id: '5', title: 'Electricity & Water', allocatedAmount: 300, category: 'utilities', icon: 'Zap', createdAt: '2024-01-15' },
-  { id: '6', title: 'Online Courses', allocatedAmount: 400, category: 'education', icon: 'GraduationCap', createdAt: '2024-02-01' },
-];
-
-const MOCK_EXPENSES: Expense[] = [
-  { id: 'e1', budgetId: '1', amount: 85.50, description: 'Weekly grocery run', date: '2024-02-01', type: 'realization', createdAt: '2024-02-01' },
-  { id: 'e2', budgetId: '1', amount: 42.30, description: 'Fresh produce', date: '2024-02-05', type: 'allocation', createdAt: '2024-02-05' },
-  { id: 'e3', budgetId: '2', amount: 450, description: 'Flight tickets deposit', date: '2024-02-03', type: 'allocation', createdAt: '2024-02-03' },
-  { id: 'e4', budgetId: '4', amount: 15.99, description: 'Netflix subscription', date: '2024-02-01', type: 'realization', createdAt: '2024-02-01' },
-  { id: 'e5', budgetId: '5', amount: 120, description: 'Electricity bill', date: '2024-02-10', type: 'realization', createdAt: '2024-02-10' },
-  { id: 'e6', budgetId: '3', amount: 200, description: 'Monthly savings', date: '2024-02-15', type: 'allocation', createdAt: '2024-02-15' },
-  { id: 'e7', budgetId: '6', amount: 49.99, description: 'Udemy course', date: '2024-02-08', type: 'realization', createdAt: '2024-02-08' },
-  { id: 'e8', budgetId: '1', amount: 65, description: 'Dinner ingredients', date: '2024-02-12', type: 'realization', createdAt: '2024-02-12' },
-];
-
 export function useBudgetData() {
-  const [budgets, setBudgets] = useState<Budget[]>(MOCK_BUDGETS);
-  const [expenses, setExpenses] = useState<Expense[]>(MOCK_EXPENSES);
+  const [budgets, setBudgets] = useState<Budget[]>([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const addBudget = useCallback((budget: Omit<Budget, 'id' | 'createdAt'>) => {
-    setBudgets(prev => [...prev, { ...budget, id: crypto.randomUUID(), createdAt: new Date().toISOString() }]);
+  // 1. Listen to Budgets Real-time
+  useEffect(() => {
+    const q = query(collection(db, 'budgets'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      })) as Budget[];
+      setBudgets(data);
+      setLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
 
-  const addExpense = useCallback((expense: Omit<Expense, 'id' | 'createdAt'>) => {
-    setExpenses(prev => [...prev, { ...expense, id: crypto.randomUUID(), createdAt: new Date().toISOString() }]);
+  // 2. Listen to Expenses Real-time
+  useEffect(() => {
+    const q = query(collection(db, 'expenses'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      })) as Expense[];
+      setExpenses(data);
+    });
+    return () => unsubscribe();
   }, []);
 
-  const deleteExpense = useCallback((id: string) => {
-    setExpenses(prev => prev.filter(e => e.id !== id));
+  // 3. Firebase Actions
+  const addBudget = useCallback(async (budget: Omit<Budget, 'id' | 'createdAt'>) => {
+    await addDoc(collection(db, 'budgets'), {
+      ...budget,
+      createdAt: new Date().toISOString(),
+    });
   }, []);
 
-  const updateExpense = useCallback((id: string, data: Partial<Omit<Expense, 'id' | 'createdAt'>>) => {
-    setExpenses(prev => prev.map(e => e.id === id ? { ...e, ...data } : e));
+  const addExpense = useCallback(async (expense: Omit<Expense, 'id' | 'createdAt'>) => {
+    await addDoc(collection(db, 'expenses'), {
+      ...expense,
+      createdAt: new Date().toISOString(),
+    });
   }, []);
 
-  const deleteBudget = useCallback((id: string) => {
-    setBudgets(prev => prev.filter(b => b.id !== id));
-    setExpenses(prev => prev.filter(e => e.budgetId !== id));
+  const deleteExpense = useCallback(async (id: string) => {
+    await deleteDoc(doc(db, 'expenses', id));
   }, []);
 
+  const updateExpense = useCallback(async (id: string, data: Partial<Omit<Expense, 'id' | 'createdAt'>>) => {
+    await updateDoc(doc(db, 'expenses', id), data);
+  }, []);
+
+  const deleteBudget = useCallback(async (id: string) => {
+    await deleteDoc(doc(db, 'budgets', id));
+    // Opsional: Hapus juga semua expenses yang terkait budget ini
+  }, []);
+
+  // 4. Calculation Functions (Dibutuhkan oleh Index.tsx)
+  
+  // Total Spent (Gabungan Allocation & Realization)
   const getSpentForBudget = useCallback((budgetId: string) => {
-    return expenses.filter(e => e.budgetId === budgetId).reduce((sum, e) => sum + e.amount, 0);
+    return expenses
+      .filter(e => e.budgetId === budgetId)
+      .reduce((sum, e) => sum + e.amount, 0);
   }, [expenses]);
 
+  // Total Allocation
   const getAllocationForBudget = useCallback((budgetId: string) => {
-    return expenses.filter(e => e.budgetId === budgetId && e.type === 'allocation').reduce((sum, e) => sum + e.amount, 0);
+    return expenses
+      .filter(e => e.budgetId === budgetId && e.type === 'allocation')
+      .reduce((sum, e) => sum + e.amount, 0);
   }, [expenses]);
 
+  // Total Realization
   const getRealizationForBudget = useCallback((budgetId: string) => {
-    return expenses.filter(e => e.budgetId === budgetId && e.type === 'realization').reduce((sum, e) => sum + e.amount, 0);
+    return expenses
+      .filter(e => e.budgetId === budgetId && e.type === 'realization')
+      .reduce((sum, e) => sum + e.amount, 0);
   }, [expenses]);
 
+  // Summary Overview
   const summary = useMemo(() => {
     const totalBudgeted = budgets.reduce((sum, b) => sum + b.allocatedAmount, 0);
     const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
-    return { totalBudgeted, totalSpent, remaining: totalBudgeted - totalSpent };
+    return { 
+      totalBudgeted, 
+      totalSpent, 
+      remaining: totalBudgeted - totalSpent 
+    };
   }, [budgets, expenses]);
 
-  return { budgets, expenses, addBudget, addExpense, deleteExpense, updateExpense, deleteBudget, getSpentForBudget, getAllocationForBudget, getRealizationForBudget, summary };
+  return { 
+    budgets, 
+    expenses, 
+    loading, 
+    addBudget, 
+    addExpense, 
+    deleteExpense, 
+    updateExpense, 
+    deleteBudget, 
+    getSpentForBudget, 
+    getAllocationForBudget, 
+    getRealizationForBudget, 
+    summary 
+  };
 }
