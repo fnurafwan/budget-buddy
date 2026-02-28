@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --background: 40 100% 96%;
+    --foreground: 20 10% 10%;
+
+    --card: 40 100% 99%;
+    --card-foreground: 20 10% 10%;
+
+    --popover: 40 100% 99%;
+    --popover-foreground: 20 10% 10%;
+
+    --primary: 270 60% 62%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 40 60% 94%;
+    --secondary-foreground: 20 10% 30%;
+
+    --muted: 40 30% 93%;
+    --muted-foreground: 20 8% 50%;
+
+    --accent: 270 50% 92%;
+    --accent-foreground: 270 60% 30%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 70% 42%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --income: 152 70% 42%;
+    --income-foreground: 0 0% 100%;
+
+    --expense: 350 70% 55%;
+    --expense-foreground: 0 0% 100%;
+
+    --border: 20 15% 80%;
+    --input: 40 30% 90%;
+    --ring: 270 60% 62%;
+
+    --radius: 1rem;
+
+    --sidebar-background: 40 100% 99%;
+    --sidebar-foreground: 20 10% 20%;
+    --sidebar-primary: 270 60% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 50% 92%;
+    --sidebar-accent-foreground: 270 60% 30%;
+    --sidebar-border: 20 15% 85%;
+    --sidebar-ring: 270 60% 62%;
+  }
+
+  .dark {
+    --background: 20 15% 8%;
+    --foreground: 40 30% 92%;
+
+    --card: 20 15% 12%;
+    --card-foreground: 40 30% 92%;
+
+    --popover: 20 15% 12%;
+    --popover-foreground: 40 30% 92%;
+
+    --primary: 270 60% 62%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 20 12% 18%;
+    --secondary-foreground: 40 30% 85%;
+
+    --muted: 20 12% 18%;
+    --muted-foreground: 40 10% 55%;
+
+    --accent: 270 30% 22%;
+    --accent-foreground: 270 50% 80%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 70% 42%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --income: 152 70% 42%;
+    --income-foreground: 0 0% 100%;
+
+    --expense: 350 70% 55%;
+    --expense-foreground: 0 0% 100%;
+
+    --border: 20 12% 22%;
+    --input: 20 12% 22%;
+    --ring: 270 60% 62%;
+
+    --sidebar-background: 20 15% 8%;
+    --sidebar-foreground: 40 30% 85%;
+    --sidebar-primary: 270 60% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 30% 22%;
+    --sidebar-accent-foreground: 270 50% 80%;
+    --sidebar-border: 20 12% 22%;
+    --sidebar-ring: 270 60% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Nunito', 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .card-bordered {
+    @apply bg-card border-2 border-foreground/15 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.08)];
+  }
+
+  .card-accent {
+    @apply bg-accent border-2 border-foreground/15 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.06)];
+  }
+
+  .card-income {
+    background-color: hsl(var(--income) / 0.1);
+    border: 2px solid hsl(var(--income) / 0.3);
+    border-radius: var(--radius);
+  }
+
+  .card-expense {
+    background-color: hsl(var(--expense) / 0.1);
+    border: 2px solid hsl(var(--expense) / 0.3);
+    border-radius: var(--radius);
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground border-2 border-foreground/15 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all;
+  }
+
+  .btn-dark {
+    @apply bg-foreground text-background border-2 border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,0.15)] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,0.1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all;
+  }
+}
