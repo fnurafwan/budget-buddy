@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft, Plus, Pencil, Trash2, Check, X, AlertTriangle,
   TrendingUp, TrendingDown, Minus, Flag, LayoutGrid, List,
-  User, ChevronDown, ArrowRightLeft,
+  User, ChevronDown, ArrowRightLeft, Search,
 } from 'lucide-react';
 import { icons } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -504,6 +504,7 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
   const [view, setView] = useState<'grid' | 'list'>('list');
   const [sortKey, setSortKey] = useState<'amount' | 'date' | 'flag'>('amount');
   const [filterFlag, setFilterFlag] = useState<FlagLevel | 'all'>('all');
+  const [filterPerson, setFilterPerson] = useState<string>('all');
 
   const avg = expenses.length > 0
     ? expenses.reduce((s, e) => s + e.amount, 0) / expenses.length
@@ -518,15 +519,27 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
     [expenses, avg, totalBudget]
   );
 
+  // Collect unique person names for filter dropdown
+  const personOptions = useMemo(() => {
+    const names = new Set<string>();
+    enriched.forEach(e => { if (e.personName) names.add(e.personName); });
+    return Array.from(names).sort((a, b) => a.localeCompare(b, 'id'));
+  }, [enriched]);
+
   const sorted = useMemo(() => {
-    const filtered = filterFlag === 'all' ? enriched : enriched.filter(e => e.flag === filterFlag);
+    let filtered = filterFlag === 'all' ? enriched : enriched.filter(e => e.flag === filterFlag);
+    if (filterPerson !== 'all') {
+      filtered = filterPerson === '__none__'
+        ? filtered.filter(e => !e.personName)
+        : filtered.filter(e => e.personName === filterPerson);
+    }
     return [...filtered].sort((a, b) => {
       if (sortKey === 'amount') return b.amount - a.amount;
       if (sortKey === 'date') return new Date(b.date).getTime() - new Date(a.date).getTime();
       const order: FlagLevel[] = ['critical', 'warning', 'normal', 'low'];
       return order.indexOf(a.flag) - order.indexOf(b.flag);
     });
-  }, [enriched, sortKey, filterFlag]);
+  }, [enriched, sortKey, filterFlag, filterPerson]);
 
   const flagCounts = useMemo(() => {
     const counts: Record<FlagLevel, number> = { critical: 0, warning: 0, normal: 0, low: 0 };
@@ -589,8 +602,8 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
         })}
       </div>
 
-      {/* Sort */}
-      <div className="flex items-center gap-2 mb-3">
+      {/* Sort + Person Filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
         <span className="text-xs font-semibold text-muted-foreground shrink-0">Sort:</span>
         {(['amount', 'date', 'flag'] as const).map(k => (
           <button
@@ -605,6 +618,31 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
             {k.charAt(0).toUpperCase() + k.slice(1)}
           </button>
         ))}
+
+        {personOptions.length > 0 && (
+          <>
+            <span className="text-xs font-semibold text-muted-foreground shrink-0 ml-2">Person:</span>
+            <div className="relative">
+              <User className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+              <select
+                value={filterPerson}
+                onChange={e => setFilterPerson(e.target.value)}
+                className={`text-xs font-bold pl-7 pr-7 py-1 rounded-lg border-2 transition-colors appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring ${
+                  filterPerson !== 'all'
+                    ? 'bg-primary/10 text-primary border-primary/40'
+                    : 'border-foreground/10 hover:bg-secondary text-muted-foreground bg-transparent'
+                }`}
+              >
+                <option value="all">All</option>
+                {personOptions.map(name => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+                <option value="__none__">(Tanpa Nama)</option>
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Views */}
@@ -789,6 +827,9 @@ const BudgetDetail = () => {
   // Type-flip confirmation
   const [flippingId, setFlippingId] = useState<string | null>(null);
 
+  // Transaction History search
+  const [historySearch, setHistorySearch] = useState('');
+
   if (!budget) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -959,6 +1000,7 @@ const BudgetDetail = () => {
                 />
               </div>
             </div>
+            <p className="text-sm text-muted-foreground mb-6">"Beware of little expenses; a small leak will sink a great ship." — Benjamin Franklin</p>
           </div>
         </motion.div>
 
@@ -1080,13 +1122,52 @@ const BudgetDetail = () => {
 
         {/* ── Transaction History ── */}
         <div className="card-bordered rounded-2xl p-5">
-          <h3 className="font-bold text-sm text-muted-foreground mb-3">Transaction History</h3>
+          <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+            <h3 className="font-bold text-sm text-muted-foreground">Transaction History</h3>
+            {budgetExpenses.length > 0 && (
+              <div className="relative flex-1 min-w-[180px] max-w-xs">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  value={historySearch}
+                  onChange={e => setHistorySearch(e.target.value)}
+                  placeholder="Cari deskripsi / nama..."
+                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                {historySearch && (
+                  <button
+                    onClick={() => setHistorySearch('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
           {budgetExpenses.length === 0 ? (
             <p className="text-center text-muted-foreground py-8 text-sm">Belum ada transaksi</p>
-          ) : (
-            <div className="space-y-2">
-              <AnimatePresence>
-                {budgetExpenses.map(exp => (
+          ) : (() => {
+            const q = historySearch.toLowerCase().trim();
+            const filtered = q
+              ? budgetExpenses.filter(e =>
+                  e.description?.toLowerCase().includes(q) ||
+                  (e as any).personName?.toLowerCase().includes(q)
+                )
+              : budgetExpenses;
+            return (
+              <>
+                {historySearch && (
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {filtered.length} dari {budgetExpenses.length} transaksi
+                  </p>
+                )}
+                <div className={`space-y-2 overflow-y-auto pr-1 ${budgetExpenses.length > 8 ? 'max-h-[480px]' : ''}`}>
+                  <AnimatePresence>
+                    {filtered.length === 0 && (
+                      <p className="text-center text-muted-foreground py-6 text-sm">Tidak ada hasil untuk "{historySearch}"</p>
+                    )}
+                    {filtered.map(exp => (
                   <motion.div
                     key={exp.id}
                     initial={{ opacity: 0, x: -10 }}
@@ -1190,9 +1271,11 @@ const BudgetDetail = () => {
                     )}
                   </motion.div>
                 ))}
-              </AnimatePresence>
-            </div>
-          )}
+                  </AnimatePresence>
+                </div>
+              </>
+            );
+          })()}
         </div>
 
       </main>
