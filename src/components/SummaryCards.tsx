@@ -6,6 +6,7 @@ interface SummaryCardsProps {
   totalBudgeted: number;
   totalSpent: number;
   remaining: number;
+  hide?: boolean;
 }
 
 const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });

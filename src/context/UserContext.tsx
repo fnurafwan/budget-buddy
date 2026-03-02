@@ -1,0 +1,88 @@
+import { createContext, useContext, useState, useCallback } from 'react';
+
+export interface AppUser {
+  id: string;
+  name: string;
+}
+
+// PIN default — bisa diganti user, disimpan di localStorage per userId
+const DEFAULT_PINS: Record<string, string> = {
+  wulan: '111111',
+  debi:  '222222',
+};
+
+export const USERS: AppUser[] = [
+  { id: 'wulan', name: 'Wulan' },
+  { id: 'debi',  name: 'Debi'  },
+];
+
+const PIN_STORAGE_KEY = (id: string) => `bujat_pin_${id}`;
+const SESSION_KEY = 'bujat_user_id';
+const HIDE_KEY    = 'bujat_hide_numbers';
+
+const getPin = (userId: string): string =>
+  localStorage.getItem(PIN_STORAGE_KEY(userId)) ?? DEFAULT_PINS[userId] ?? '';
+
+// ── Context ────────────────────────────────────────────────────────────────────
+interface UserContextValue {
+  currentUser: AppUser | null;
+  hideNumbers: boolean;
+  login: (pin: string) => boolean;
+  logout: () => void;
+  toggleHide: () => void;
+  changePin: (userId: string, oldPin: string, newPin: string) => boolean;
+}
+
+const UserContext = createContext<UserContextValue | null>(null);
+
+// ── Provider ───────────────────────────────────────────────────────────────────
+export const UserProvider = ({ children }: { children: React.ReactNode }) => {
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(() => {
+    const savedId = sessionStorage.getItem(SESSION_KEY);
+    return USERS.find(u => u.id === savedId) ?? null;
+  });
+
+  const [hideNumbers, setHideNumbers] = useState(() =>
+    localStorage.getItem(HIDE_KEY) === 'true'
+  );
+
+  const login = useCallback((pin: string): boolean => {
+    const user = USERS.find(u => getPin(u.id) === pin);
+    if (!user) return false;
+    setCurrentUser(user);
+    sessionStorage.setItem(SESSION_KEY, user.id);
+    return true;
+  }, []);
+
+  const logout = useCallback(() => {
+    setCurrentUser(null);
+    sessionStorage.removeItem(SESSION_KEY);
+  }, []);
+
+  const toggleHide = useCallback(() => {
+    setHideNumbers(prev => {
+      const next = !prev;
+      localStorage.setItem(HIDE_KEY, String(next));
+      return next;
+    });
+  }, []);
+
+  // returns false if oldPin mismatch
+  const changePin = useCallback((userId: string, oldPin: string, newPin: string): boolean => {
+    if (getPin(userId) !== oldPin) return false;
+    localStorage.setItem(PIN_STORAGE_KEY(userId), newPin);
+    return true;
+  }, []);
+
+  return (
+    <UserContext.Provider value={{ currentUser, hideNumbers, login, logout, toggleHide, changePin }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+export const useUser = () => {
+  const ctx = useContext(UserContext);
+  if (!ctx) throw new Error('useUser must be used inside UserProvider');
+  return ctx;
+};

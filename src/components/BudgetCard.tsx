@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { icons } from 'lucide-react';
+import { icons, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Budget } from '@/types/budget';
 import { CATEGORIES } from '@/types/budget';
@@ -11,9 +11,11 @@ interface BudgetCardProps {
   spent: number;
   allocation: number;
   realization: number;
+  ownerName?: string; 
+  hide?: boolean;
 }
 
-export function BudgetCard({ budget, spent, allocation, realization }: BudgetCardProps) {
+export function BudgetCard({ budget, spent, allocation, realization, ownerName, hide }: BudgetCardProps) {
   const navigate = useNavigate();
   const remaining = budget.allocatedAmount - spent;
   const allocPercent = useMemo(() => budget.allocatedAmount > 0 ? Math.min((allocation / budget.allocatedAmount) * 100, 100) : 0, [allocation, budget.allocatedAmount]);
@@ -74,6 +76,10 @@ export function BudgetCard({ budget, spent, allocation, realization }: BudgetCar
         <div className="flex justify-between text-xs font-semibold pt-1">
           <span className="text-muted-foreground">Total: {fmt(spent)}</span>
           <span className={remaining < 0 ? 'text-destructive' : 'text-income'}>Left: {fmt(remaining)}</span>
+        </div>
+        <div className="flex justify-start items-center text-xs font-semibold pt-1 gap-2">
+          <User className="h-3 w-3 text-muted-foreground shrink-0" />
+          <span className="text-muted-foreground">{ownerName}</span>
         </div>
       </div>
     </motion.div>
