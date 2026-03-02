@@ -36,7 +36,7 @@ const Index = () => {
   const filteredBudgets = useMemo(() => {
     return budgets.filter(b => {
       const bAny = b as any;
-      if (filterUser !== 'all' && bAny.userId !== filterUser) return false;
+      if (filterUser !== 'all' && bAny.userId !== filterUser && bAny.userId != null) return false;
       if (filterYear !== 'all') {
         const year = bAny.year ?? new Date(bAny.createdAt ?? Date.now()).getFullYear();
         if (year !== filterYear) return false;

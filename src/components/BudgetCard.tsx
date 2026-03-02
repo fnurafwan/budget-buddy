@@ -79,7 +79,7 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
         </div>
         <div className="flex justify-start items-center text-xs font-semibold pt-1 gap-2">
           <User className="h-3 w-3 text-muted-foreground shrink-0" />
-          <span className="text-muted-foreground">{ownerName}</span>
+          <span className="text-muted-foreground">{ownerName ?? 'Debi & Wulan'}</span>
         </div>
       </div>
     </motion.div>
