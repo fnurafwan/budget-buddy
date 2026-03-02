@@ -194,7 +194,7 @@ const TransactionHistory = ({
 
                         <div className="flex flex-col items-end gap-1 shrink-0">
                           <span className="text-sm font-bold text-expense whitespace-nowrap">
-                            -{hideNumbers ? masked : fmt(exp.amount)}
+                            {hideNumbers ? `Rp. ${masked}` : fmt(exp.amount)}
                           </span>
                           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             {flippingId === exp.id ? (

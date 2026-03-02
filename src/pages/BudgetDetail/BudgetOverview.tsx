@@ -67,7 +67,7 @@ const BudgetOverview = ({
   const IconComp = (icons[budget.icon as keyof typeof icons] as LucideIcon) || icons.CircleDollarSign;
   const exceeds = amount !== '' && amount > remaining;
 
-  const displayNum = (n: number) => hideNumbers ? masked : fmt(n);
+  const displayNum = (n: number) => hideNumbers ? `Rp. ${masked}` : fmt(n);
 
   const resetForm = () => {
     setAmount('');
@@ -126,7 +126,7 @@ const BudgetOverview = ({
         <div className="mb-4">
           <p className="text-sm font-semibold text-muted-foreground mb-1">Budget Amount</p>
           <p className="text-3xl font-extrabold break-all">
-            {hideNumbers ? masked : fmt(budget.allocatedAmount)}
+            {hideNumbers ? `Rp. ${masked}` : fmt(budget.allocatedAmount)}
           </p>
         </div>
 

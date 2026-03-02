@@ -219,7 +219,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                     {new Date(exp.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
 
-                  <p className={`text-lg font-extrabold ${cfg.textColor}`}>{hideNumbers ? masked : fmt(exp.amount)}</p>
+                  <p className={`text-lg font-extrabold ${cfg.textColor}`}>{hideNumbers ? `Rp. ${masked}` : fmt(exp.amount)}</p>
                   <p className="text-[10px] text-muted-foreground font-semibold mb-2">{exp.pct.toFixed(1)}% of budget</p>
 
                   <div className="h-1.5 bg-black/10 rounded-full overflow-hidden">
@@ -308,7 +308,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                           </div>
                         </td>
                         <td className={`px-4 py-3 text-right text-sm font-extrabold whitespace-nowrap ${cfg.textColor}`}>
-                          {hideNumbers ? masked : fmt(exp.amount)}
+                          {hideNumbers ? `Rp. ${masked}` : fmt(exp.amount)}
                         </td>
                       </motion.tr>
                     );
