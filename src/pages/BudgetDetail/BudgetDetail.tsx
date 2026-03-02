@@ -101,7 +101,7 @@ const BudgetDetail = () => {
 
         <DoodlePieChart expenses={budgetExpenses} isThr={isThr} />
 
-        <DataGrid expenses={budgetExpenses} totalBudget={budget.allocatedAmount} />
+        <DataGrid expenses={budgetExpenses} totalBudget={budget.allocatedAmount} isThr={isThr}/>
 
         <TransactionHistory
           expenses={budgetExpenses}

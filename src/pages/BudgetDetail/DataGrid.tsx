@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutGrid, List, Flag, User, ChevronDown } from 'lucide-react';
+import { LayoutGrid, List, Flag, User, ChartBarStacked, ChevronDown } from 'lucide-react';
 import type { ExpenseType } from '@/types/budget';
 import { getFlag, FLAG_CONFIG, fmt } from './flagUtils';
 import type { FlagLevel } from './flagUtils';
@@ -13,15 +13,23 @@ export interface DataGridProps {
     date: string;
     type: ExpenseType;
     personName?: string;
+    categoryExpenseName?: string;
   }[];
   totalBudget: number;
+  isThr: boolean;
 }
 
-const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
-  const [view, setView] = useState<'grid' | 'list'>('list');
-  const [sortKey, setSortKey] = useState<'amount' | 'date' | 'flag'>('amount');
+const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
+  const [view, setView]             = useState<'grid' | 'list'>('list');
+  const [sortKey, setSortKey]       = useState<'amount' | 'date' | 'flag'>('amount');
   const [filterFlag, setFilterFlag] = useState<FlagLevel | 'all'>('all');
-  const [filterPerson, setFilterPerson] = useState<string>('all');
+  const [filterTag, setFilterTag]   = useState<string>('all');
+
+  const tagLabel = isThr ? 'Person' : 'Kategori';
+  const TagIcon  = isThr ? User : ChartBarStacked;
+
+  const getTag = (e: { personName?: string; categoryExpenseName?: string }) =>
+    isThr ? (e.personName ?? '') : (e.categoryExpenseName ?? '');
 
   const avg = expenses.length > 0
     ? expenses.reduce((s, e) => s + e.amount, 0) / expenses.length
@@ -31,31 +39,32 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
     expenses.map(e => ({
       ...e,
       flag: getFlag(e.amount, avg),
-      pct: totalBudget > 0 ? (e.amount / totalBudget) * 100 : 0,
+      pct:  totalBudget > 0 ? (e.amount / totalBudget) * 100 : 0,
+      tag:  getTag(e),
     })),
-    [expenses, avg, totalBudget]
+    [expenses, avg, totalBudget, isThr]
   );
 
-  const personOptions = useMemo(() => {
+  const tagOptions = useMemo(() => {
     const names = new Set<string>();
-    enriched.forEach(e => { if (e.personName) names.add(e.personName); });
+    enriched.forEach(e => { if (e.tag) names.add(e.tag); });
     return Array.from(names).sort((a, b) => a.localeCompare(b, 'id'));
   }, [enriched]);
 
   const sorted = useMemo(() => {
     let filtered = filterFlag === 'all' ? enriched : enriched.filter(e => e.flag === filterFlag);
-    if (filterPerson !== 'all') {
-      filtered = filterPerson === '__none__'
-        ? filtered.filter(e => !e.personName)
-        : filtered.filter(e => e.personName === filterPerson);
+    if (filterTag !== 'all') {
+      filtered = filterTag === '__none__'
+        ? filtered.filter(e => !e.tag)
+        : filtered.filter(e => e.tag === filterTag);
     }
     return [...filtered].sort((a, b) => {
       if (sortKey === 'amount') return b.amount - a.amount;
-      if (sortKey === 'date') return new Date(b.date).getTime() - new Date(a.date).getTime();
+      if (sortKey === 'date')   return new Date(b.date).getTime() - new Date(a.date).getTime();
       const order: FlagLevel[] = ['critical', 'warning', 'normal', 'low'];
       return order.indexOf(a.flag) - order.indexOf(b.flag);
     });
-  }, [enriched, sortKey, filterFlag, filterPerson]);
+  }, [enriched, sortKey, filterFlag, filterTag]);
 
   const flagCounts = useMemo(() => {
     const counts: Record<FlagLevel, number> = { critical: 0, warning: 0, normal: 0, low: 0 };
@@ -100,7 +109,7 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
       {/* Flag Summary */}
       <div className="grid grid-cols-4 gap-2 mb-3">
         {(Object.entries(flagCounts) as [FlagLevel, number][]).map(([flag, count]) => {
-          const cfg = FLAG_CONFIG[flag];
+          const cfg    = FLAG_CONFIG[flag];
           const active = filterFlag === flag;
           return (
             <button
@@ -118,7 +127,7 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
         })}
       </div>
 
-      {/* Sort + Person Filter */}
+      {/* Sort + Tag Filter */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <span className="text-xs font-semibold text-muted-foreground shrink-0">Sort:</span>
         {(['amount', 'date', 'flag'] as const).map(k => (
@@ -135,25 +144,25 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
           </button>
         ))}
 
-        {personOptions.length > 0 && (
+        {tagOptions.length > 0 && (
           <>
-            <span className="text-xs font-semibold text-muted-foreground shrink-0 ml-2">Person:</span>
+            <span className="text-xs font-semibold text-muted-foreground shrink-0 ml-2">{tagLabel}:</span>
             <div className="relative">
-              <User className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
+              <TagIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
               <select
-                value={filterPerson}
-                onChange={e => setFilterPerson(e.target.value)}
+                value={filterTag}
+                onChange={e => setFilterTag(e.target.value)}
                 className={`text-xs font-bold pl-7 pr-7 py-1 rounded-lg border-2 transition-colors appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring ${
-                  filterPerson !== 'all'
+                  filterTag !== 'all'
                     ? 'bg-primary/10 text-primary border-primary/40'
                     : 'border-foreground/10 hover:bg-secondary text-muted-foreground bg-transparent'
                 }`}
               >
                 <option value="all">All</option>
-                {personOptions.map(name => (
+                {tagOptions.map(name => (
                   <option key={name} value={name}>{name}</option>
                 ))}
-                <option value="__none__">(Tanpa Nama)</option>
+                <option value="__none__">{isThr ? '(Tanpa Nama)' : '(Tanpa Kategori)'}</option>
               </select>
               <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3 w-3 text-muted-foreground pointer-events-none" />
             </div>
@@ -195,12 +204,14 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
                   </span>
 
                   <p className="text-sm font-bold pr-16 mb-0.5 leading-snug">{exp.description}</p>
-                  {exp.personName && (
+
+                  {exp.tag && (
                     <div className="flex items-center gap-1 mb-0.5">
-                      <User className="h-3 w-3 text-muted-foreground shrink-0" />
-                      <span className="text-xs text-muted-foreground font-medium truncate">{exp.personName}</span>
+                      <TagIcon className="h-3 w-3 text-muted-foreground shrink-0" />
+                      <span className="text-xs text-muted-foreground font-medium truncate">{exp.tag}</span>
                     </div>
                   )}
+
                   <p className="text-xs text-muted-foreground mb-3">
                     {new Date(exp.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
@@ -233,7 +244,7 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
                 <thead className="sticky top-0 bg-secondary/90 backdrop-blur z-10">
                   <tr className="bg-secondary/60 border-b-2 border-foreground/5">
                     <th className="text-left px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Item</th>
-                    <th className="text-left px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Person</th>
+                    <th className="text-left px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">{tagLabel}</th>
                     <th className="text-center px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Type</th>
                     <th className="text-center px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Flag</th>
                     <th className="text-right px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">% Budget</th>
@@ -258,10 +269,10 @@ const DataGrid = ({ expenses, totalBudget }: DataGridProps) => {
                           </p>
                         </td>
                         <td className="px-3 py-3 min-w-[100px]">
-                          {exp.personName ? (
+                          {exp.tag ? (
                             <div className="flex items-center gap-1">
-                              <User className="h-3 w-3 text-muted-foreground shrink-0" />
-                              <span className="text-xs font-medium text-foreground truncate max-w-[80px]">{exp.personName}</span>
+                              <TagIcon className="h-3 w-3 text-muted-foreground shrink-0" />
+                              <span className="text-xs font-medium text-foreground truncate max-w-[80px]">{exp.tag}</span>
                             </div>
                           ) : (
                             <span className="text-[10px] text-muted-foreground/50">—</span>
