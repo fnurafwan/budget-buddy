@@ -109,22 +109,9 @@ const Index = () => {
           </div>
 
           {/* Actions — di sini, bukan di header */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Hide/show toggle */}
-            {/* <button
-              onClick={toggleHide}
-              title={hideNumbers ? 'Tampilkan angka' : 'Sembunyikan angka'}
-              className="p-2.5 rounded-xl border-2 border-foreground/10 hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
-            >
-              {hideNumbers ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button> */}
-
-            
-
+          <div className="flex flex-row items-center justify-between gap-2 shrink-0">
             {/* New budget */}
             <NewBudgetModal onAdd={handleAddBudget} />
-
-            
           </div>
         </div>
 
@@ -196,9 +183,19 @@ const Index = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-extrabold">Budget Plans</h2>
-            <span className="text-xs font-bold text-muted-foreground bg-secondary px-2.5 py-1 rounded-full">
-              {filteredBudgets.length} budget
-            </span>
+            <div>
+              <span className="text-xs font-bold text-muted-foreground bg-secondary px-2.5 py-1 rounded-full mr-2">
+                {filteredBudgets.length} budget
+              </span>
+              {/* Hide/show toggle */}
+              <button
+                onClick={toggleHide}
+                title={hideNumbers ? 'Tampilkan angka' : 'Sembunyikan angka'}
+                className="p-2.5 rounded-xl border-2 border-foreground/10 hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+              >
+                {hideNumbers ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
 
           {filteredBudgets.length === 0 ? (

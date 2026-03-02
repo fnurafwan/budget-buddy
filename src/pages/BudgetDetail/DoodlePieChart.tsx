@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { fmt } from './flagUtils';
+import { useUser } from '@/context/UserContext';
 
 const DOODLE_COLORS = [
   { fill: '#e6194b', stroke: '#9e1233', light: 'rgba(230,25,75,0.12)' },
@@ -93,6 +94,8 @@ export interface DoodlePieChartProps {
 
 const DoodlePieChart = ({ expenses, isThr }: DoodlePieChartProps) => {
   const [hovered, setHovered] = useState<string | null>(null);
+  const { hideNumbers } = useUser();
+  const masked = '••••••';
 
   const slices = useMemo(() => {
     const map = new Map<string, number>();
@@ -275,7 +278,7 @@ const DoodlePieChart = ({ expenses, isThr }: DoodlePieChartProps) => {
                         </div>
                         <div className="flex items-center justify-between gap-1">
                           <span className="font-bold" style={{ color: s.color.stroke, fontFamily: "'Caveat', cursive", fontSize: '14px' }}>
-                            {fmt(s.total)}
+                            {hideNumbers ? masked : fmt(s.total)}
                           </span>
                         </div>
                         <div className="mt-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--secondary)' }}>

@@ -24,6 +24,8 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
   const IconComp = (icons[budget.icon as keyof typeof icons] as LucideIcon) || icons.CircleDollarSign;
   const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
 
+  const masked = '••••••';
+  
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -47,7 +49,7 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
         <div>
           <div className="flex justify-between text-[10px] font-semibold mb-1">
             <span className="text-primary">Allocation</span>
-            <span className="text-primary">{fmt(allocation)}</span>
+            <span className="text-primary">{hide ? masked : fmt(allocation)}</span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden border border-border">
             <motion.div
@@ -62,7 +64,7 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
         <div>
           <div className="flex justify-between text-[10px] font-semibold mb-1">
             <span className="text-expense">Realization</span>
-            <span className="text-expense">{fmt(realization)}</span>
+            <span className="text-expense">{hide ? masked : fmt(realization)}</span>
           </div>
           <div className="h-2 bg-secondary rounded-full overflow-hidden border border-border">
             <motion.div
@@ -74,8 +76,8 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
           </div>
         </div>
         <div className="flex justify-between text-xs font-semibold pt-1">
-          <span className="text-muted-foreground">Total: {fmt(spent)}</span>
-          <span className={remaining < 0 ? 'text-destructive' : 'text-income'}>Left: {fmt(remaining)}</span>
+          <span className="text-muted-foreground">Total: {hide ? masked : fmt(spent)}</span>
+          <span className={remaining < 0 ? 'text-destructive' : 'text-income'}>Left: {hide ? masked : fmt(remaining)}</span>
         </div>
         <div className="flex justify-start items-center text-xs font-semibold pt-1 gap-2">
           <User className="h-3 w-3 text-muted-foreground shrink-0" />

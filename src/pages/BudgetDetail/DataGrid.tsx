@@ -4,6 +4,7 @@ import { LayoutGrid, List, Flag, User, ChartBarStacked, ChevronDown } from 'luci
 import type { ExpenseType } from '@/types/budget';
 import { getFlag, FLAG_CONFIG, fmt } from './flagUtils';
 import type { FlagLevel } from './flagUtils';
+import { useUser } from '@/context/UserContext';
 
 export interface DataGridProps {
   expenses: {
@@ -24,6 +25,8 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
   const [sortKey, setSortKey]       = useState<'amount' | 'date' | 'flag'>('amount');
   const [filterFlag, setFilterFlag] = useState<FlagLevel | 'all'>('all');
   const [filterTag, setFilterTag]   = useState<string>('all');
+  const { hideNumbers } = useUser();
+  const masked = '••••••';
 
   const tagLabel = isThr ? 'Person' : 'Kategori';
   const TagIcon  = isThr ? User : ChartBarStacked;
@@ -216,7 +219,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                     {new Date(exp.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
 
-                  <p className={`text-lg font-extrabold ${cfg.textColor}`}>{fmt(exp.amount)}</p>
+                  <p className={`text-lg font-extrabold ${cfg.textColor}`}>{hideNumbers ? masked : fmt(exp.amount)}</p>
                   <p className="text-[10px] text-muted-foreground font-semibold mb-2">{exp.pct.toFixed(1)}% of budget</p>
 
                   <div className="h-1.5 bg-black/10 rounded-full overflow-hidden">
@@ -305,7 +308,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                           </div>
                         </td>
                         <td className={`px-4 py-3 text-right text-sm font-extrabold whitespace-nowrap ${cfg.textColor}`}>
-                          {fmt(exp.amount)}
+                          {hideNumbers ? masked : fmt(exp.amount)}
                         </td>
                       </motion.tr>
                     );
