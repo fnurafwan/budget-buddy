@@ -111,7 +111,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
           onChange={handleInput}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="w-full pl-8 pr-8 py-2 text-sm rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full pl-8 pr-8 py-2 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
         <button
           type="button"

@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
 import { CATEGORIES, type Category } from '@/types/budget';
+import CurrencyInput from './CurrencyInput';
 
 interface NewBudgetModalProps {
   onAdd: (budget: { title: string; allocatedAmount: number; category: Category; icon: string }) => void;
@@ -13,14 +14,14 @@ interface NewBudgetModalProps {
 export function NewBudgetModal({ onAdd }: NewBudgetModalProps) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState<number | ''>('');
   const [category, setCategory] = useState<Category | ''>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !amount || !category) return;
     const cat = CATEGORIES.find(c => c.value === category);
-    onAdd({ title, allocatedAmount: parseFloat(amount), category, icon: cat?.icon || 'CircleDollarSign' });
+    onAdd({ title, allocatedAmount: amount as number, category, icon: cat?.icon || 'CircleDollarSign' });
     setTitle(''); setAmount(''); setCategory('');
     setOpen(false);
   };
@@ -43,7 +44,13 @@ export function NewBudgetModal({ onAdd }: NewBudgetModalProps) {
           </div>
           <div>
             <Label htmlFor="amount" className="font-semibold">Allocated Amount (Rp)</Label>
-            <Input id="amount" type="number" min="0" step="0.01" placeholder="0.00" value={amount} onChange={e => setAmount(e.target.value)} className="rounded-xl border-2 border-foreground/10 mt-1" />
+            {/* <Input id="amount" type="number" min="0" step="0.01" placeholder="0.00" value={amount} onChange={e => setAmount(e.target.value)} className="rounded-xl border-2 border-foreground/10 mt-1" /> */}
+            <CurrencyInput
+              value={amount}
+              onChange={setAmount}
+              placeholder="0"
+              className="w-full pl-8 pr-3 py-2 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
           </div>
           <div>
             <Label className="font-semibold">Category</Label>

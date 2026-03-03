@@ -219,7 +219,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                     {new Date(exp.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
 
-                  <p className={`text-lg font-extrabold ${cfg.textColor}`}>{hideNumbers ? `Rp. ${masked}` : fmt(exp.amount)}</p>
+                  <p className={`text-lg font-extrabold ${cfg.textColor}`}>{hideNumbers ? `Rp${masked}` : fmt(exp.amount)}</p>
                   <p className="text-[10px] text-muted-foreground font-semibold mb-2">{exp.pct.toFixed(1)}% of budget</p>
 
                   <div className="h-1.5 bg-black/10 rounded-full overflow-hidden">
@@ -246,6 +246,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
               <table className="w-full min-w-[520px]">
                 <thead className="sticky top-0 bg-secondary/90 backdrop-blur z-10">
                   <tr className="bg-secondary/60 border-b-2 border-foreground/5">
+                    <th className="text-center px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">No.</th>
                     <th className="text-left px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Item</th>
                     <th className="text-left px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">{tagLabel}</th>
                     <th className="text-center px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Type</th>
@@ -265,6 +266,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                         transition={{ delay: i * 0.03 }}
                         className="border-b border-foreground/5 last:border-0 hover:bg-secondary/40 transition-colors"
                       >
+                        <td className="px-4 py-3 text-center text-[10px] font-bold text-muted-foreground">{i + 1}</td>
                         <td className="px-4 py-3 min-w-[140px]">
                           <p className="text-sm font-semibold">{exp.description}</p>
                           <p className="text-[10px] text-muted-foreground mt-0.5">
@@ -308,7 +310,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                           </div>
                         </td>
                         <td className={`px-4 py-3 text-right text-sm font-extrabold whitespace-nowrap ${cfg.textColor}`}>
-                          {hideNumbers ? `Rp. ${masked}` : fmt(exp.amount)}
+                          {hideNumbers ? `Rp${masked}` : fmt(exp.amount)}
                         </td>
                       </motion.tr>
                     );

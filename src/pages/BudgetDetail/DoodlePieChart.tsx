@@ -278,7 +278,7 @@ const DoodlePieChart = ({ expenses, isThr }: DoodlePieChartProps) => {
                         </div>
                         <div className="flex items-center justify-between gap-1">
                           <span className="font-bold" style={{ color: s.color.stroke, fontFamily: "'Caveat', cursive", fontSize: '14px' }}>
-                            {hideNumbers ? `Rp. ${masked}` : fmt(s.total)}
+                            {hideNumbers ? `Rp${masked}` : fmt(s.total)}
                           </span>
                         </div>
                         <div className="mt-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--secondary)' }}>
@@ -302,7 +302,7 @@ const DoodlePieChart = ({ expenses, isThr }: DoodlePieChartProps) => {
                 Grand total
               </span>
               <span className="font-extrabold" style={{ fontFamily: "'Caveat', cursive", fontSize: '17px' }}>
-                {hideNumbers ? `Rp. ${masked}` : fmt(grandTotal)}
+                {hideNumbers ? `Rp${masked}` : fmt(grandTotal)}
               </span>
             </div>
           </div>

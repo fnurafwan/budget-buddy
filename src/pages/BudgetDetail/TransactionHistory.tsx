@@ -140,7 +140,7 @@ const TransactionHistory = ({
                               value={editAmount}
                               onChange={setEditAmount}
                               placeholder="0"
-                              className="w-full pl-7 pr-2 py-1.5 text-sm rounded-lg border-2 border-foreground/10 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                              className="w-full pl-7 pr-2 py-1.5 rounded-lg border-2 border-foreground/10 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                             />
                           </div>
                           <Input
@@ -194,7 +194,7 @@ const TransactionHistory = ({
 
                         <div className="flex flex-col items-end gap-1 shrink-0">
                           <span className="text-sm font-bold text-expense whitespace-nowrap">
-                            {hideNumbers ? `Rp. ${masked}` : fmt(exp.amount)}
+                            {hideNumbers ? `Rp${masked}` : fmt(exp.amount)}
                           </span>
                           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             {flippingId === exp.id ? (
