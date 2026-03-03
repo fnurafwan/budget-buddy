@@ -93,7 +93,7 @@ const TransactionHistory = ({
               value={historySearch}
               onChange={e => setHistorySearch(e.target.value)}
               placeholder={`Cari deskripsi / ${isThr ? 'nama' : 'kategori'}...`}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full pl-8 pr-3 py-1.5 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             />
             {historySearch && (
               <button onClick={() => setHistorySearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
