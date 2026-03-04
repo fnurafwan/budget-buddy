@@ -173,18 +173,20 @@ const BudgetOverview = ({
               <span className="text-sm text-muted-foreground">{category?.label}</span>
             </div>
           </div>
-          {/* Hide/show toggle khusus halaman ini */}
-          <button
-            onClick={toggleHide}
-            title={hideNumbers ? 'Tampilkan angka' : 'Sembunyikan angka'}
-            className="shrink-0 p-2 rounded-xl border-2 border-foreground/10 hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground mt-0.5"
-          >
-            {hideNumbers ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
         </div>
 
         <div className="mb-4">
-          <p className="text-sm font-semibold text-muted-foreground mb-1">Budget Amount</p>
+          <div className='flex flex-row justify-between items-end'>
+            <p className="text-sm font-semibold text-muted-foreground mb-1">Budget Amount</p>
+              {/* Hide/show toggle khusus halaman ini */}
+            <button
+              onClick={toggleHide}
+              title={hideNumbers ? 'Tampilkan angka' : 'Sembunyikan angka'}
+              className="shrink-0 p-2 rounded-xl border-2 border-foreground/10 hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground mt-0.5"
+            >
+              {hideNumbers ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
           {editingAmountId === budget.id ? (
             <>
             <CurrencyInput
@@ -217,6 +219,8 @@ const BudgetOverview = ({
               </p>
             )
           }
+          
+          
         </div>
 
         <div className="grid grid-cols-2 gap-2 mb-2">
