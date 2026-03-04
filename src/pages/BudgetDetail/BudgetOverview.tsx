@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { Plus, AlertTriangle, Eye, EyeOff, Pencil, X, Check } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { icons } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { CATEGORIES } from '@/types/budget';
-import type { ExpenseType } from '@/types/budget';
+import type { Budget, ExpenseType } from '@/types/budget';
 import { fmt } from './flagUtils';
 import PersonCombobox from './PersonCombobox';
 import CurrencyInput from '@/components/CurrencyInput';
@@ -36,6 +36,7 @@ interface BudgetOverviewProps {
     personName?: string;
     categoryExpenseName?: string;
   }) => void;
+  onUpdate: (id: string, updates: Partial<Budget>) => void;
 }
 
 // Sembunyikan angka dengan bullet
@@ -52,6 +53,7 @@ const BudgetOverview = ({
   persons,
   categoryExpenses,
   onAddExpense,
+  onUpdate,
 }: BudgetOverviewProps) => {
   const isThr = budget.category === 'thr';
   const { hideNumbers, toggleHide } = useUser();
@@ -94,6 +96,34 @@ const BudgetOverview = ({
     resetForm();
   };
 
+  const [editingId, setEditingId]         = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+
+  const startEdit = (id: string, title: string) => {
+    setEditingId(id);
+    setEditTitle(title);
+  };
+
+  const saveEdit = (bdtId: string) => {
+    if (editTitle === '') return;
+    onUpdate(bdtId, { title: editTitle });
+    setEditingId(null);
+  };
+
+  const [editingAmountId, setEditingAmountId]         = useState<string | null>(null);
+  const [editAmount, setEditAmount]       = useState<number | ''>('');
+
+  const startEditAmount = (id: string, amount: number) => {
+    setEditingAmountId(id);
+    setEditAmount(amount);
+  };
+
+  const saveEditAmount = (bdtId: string) => {
+    if (editAmount === '') return;
+    onUpdate(bdtId, { allocatedAmount: editAmount });
+    setEditingAmountId(null);
+  };
+
   return (
     <>
       {/* ── Budget Header Card ── */}
@@ -109,7 +139,37 @@ const BudgetOverview = ({
               <IconComp className="h-6 w-6" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl font-extrabold">{budget.title}</h1>
+              {editingId === budget.id ? (
+                <>
+                <Input
+                  className="flex rounded-lg border-2 border-foreground/10 min-w-0 w-fit md:w-96"
+                  value={editTitle}
+                  onChange={e => setEditTitle(e.target.value)}
+                  placeholder="Budget"
+                />
+                <div className='flex flex-row justify-end gap-2 mt-2'>
+                  <button onClick={() => saveEdit(budget.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-income/10 text-income text-xs font-bold">
+                    <Check className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => setEditingId(null)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-secondary text-muted-foreground text-xs font-bold border border-foreground/10">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+                </>
+                ):
+                (
+                  <h1 className="text-2xl font-extrabold">{budget.title}
+                    <span className='ml-2'>
+                      <button 
+                        onClick={() => startEdit(budget.id, budget.title)} 
+                        className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground"
+                        >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    </span>
+                  </h1>    
+                )
+              }
               <span className="text-sm text-muted-foreground">{category?.label}</span>
             </div>
           </div>
@@ -125,9 +185,38 @@ const BudgetOverview = ({
 
         <div className="mb-4">
           <p className="text-sm font-semibold text-muted-foreground mb-1">Budget Amount</p>
-          <p className="text-3xl font-extrabold break-all">
-            {hideNumbers ? `Rp${masked}` : fmt(budget.allocatedAmount)}
-          </p>
+          {editingAmountId === budget.id ? (
+            <>
+            <CurrencyInput
+              value={editAmount}
+              onChange={setEditAmount}
+              placeholder="0"
+              className="w-full pl-8 pr-3 py-2 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <div className='flex flex-row justify-end gap-2 mt-2'>
+              <button onClick={() => saveEditAmount(budget.id)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-income/10 text-income text-xs font-bold">
+                <Check className="h-3.5 w-3.5" />
+              </button>
+              <button onClick={() => setEditingAmountId(null)} className="flex items-center gap-1 px-3 py-1.5 rounded-lg hover:bg-secondary text-muted-foreground text-xs font-bold border border-foreground/10">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            </>
+            ):
+            (
+              <p className="text-3xl font-extrabold break-all">
+                {hideNumbers ? `Rp${masked}` : fmt(budget.allocatedAmount)}
+                <span className='ml-2'>
+                  <button 
+                    onClick={() => startEditAmount(budget.id, budget.allocatedAmount)} 
+                    className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground"
+                    >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                </span>
+              </p>
+            )
+          }
         </div>
 
         <div className="grid grid-cols-2 gap-2 mb-2">

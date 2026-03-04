@@ -23,6 +23,7 @@ const BudgetDetail = () => {
     deleteBudget,
     getAllocationForBudget,
     getRealizationForBudget,
+    updateBudget,
   } = useBudgetData();
 
   const budget = budgets.find(b => b.id === id);
@@ -97,6 +98,7 @@ const BudgetDetail = () => {
           persons={persons}
           categoryExpenses={categoryExpenses}
           onAddExpense={handleAddExpense}
+          onUpdate={(bgtId, updates) => updateBudget(bgtId, updates as any)}
         />
 
         <DoodlePieChart expenses={budgetExpenses} isThr={isThr} />
