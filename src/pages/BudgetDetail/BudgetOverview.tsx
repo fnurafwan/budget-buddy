@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, AlertTriangle, Eye, EyeOff, Pencil, X, Check } from 'lucide-react';
+import { Plus, AlertTriangle, Eye, EyeOff, Pencil, X, Check, Clock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { icons } from 'lucide-react';
@@ -19,6 +19,7 @@ interface BudgetOverviewProps {
     category: string;
     icon: string;
     allocatedAmount: number;
+    createdAt: string;
   };
   allocation: number;
   realization: number;
@@ -124,6 +125,16 @@ const BudgetOverview = ({
     setEditingAmountId(null);
   };
 
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString("id-ID", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   return (
     <>
       {/* ── Budget Header Card ── */}
@@ -170,7 +181,11 @@ const BudgetOverview = ({
                   </h1>    
                 )
               }
-              <span className="text-sm text-muted-foreground">{category?.label}</span>
+              <div className='flex flex-col'>
+                <span className="text-sm text-muted-foreground">{category?.label}</span>
+                {/* <Clock className="h-3 w-3 text-muted-foreground shrink-0 ml-1" /> */}
+                <span className="text-xs text-muted-foreground">{formatDateTime(budget?.createdAt) ?? ''}</span>
+              </div>
             </div>
           </div>
         </div>

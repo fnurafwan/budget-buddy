@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { icons, User } from 'lucide-react';
+import { Clock, icons, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Budget } from '@/types/budget';
 import { CATEGORIES } from '@/types/budget';
@@ -23,6 +23,15 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
   const category = CATEGORIES.find(c => c.value === budget.category);
   const IconComp = (icons[budget.icon as keyof typeof icons] as LucideIcon) || icons.CircleDollarSign;
   const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString("id-ID", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const masked = '••••••';
   
@@ -79,9 +88,11 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
           <span className="text-muted-foreground">Total: {hide ? `Rp${masked}` : fmt(spent)}</span>
           <span className={remaining < 0 ? 'text-destructive' : 'text-income'}>Left: {hide ? `Rp${masked}` : fmt(remaining)}</span>
         </div>
-        <div className="flex justify-start items-center text-xs font-semibold pt-1 gap-2">
+        <div className="flex justify-start items-center text-xs font-semibold pt-1 gap-1">
           <User className="h-3 w-3 text-muted-foreground shrink-0" />
           <span className="text-muted-foreground">{ownerName ?? 'Debi & Wulan'}</span>
+          <Clock className="h-3 w-3 text-muted-foreground shrink-0 ml-1" />
+          <span className="text-muted-foreground">{formatDateTime(budget?.createdAt) ?? ''}</span>
         </div>
       </div>
     </motion.div>
