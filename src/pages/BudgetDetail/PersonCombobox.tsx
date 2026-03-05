@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { User, ChevronDown, Plus, ChartBarStacked } from 'lucide-react';
 
@@ -14,21 +14,86 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
   const [query, setQuery] = useState(value);
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const inputWrapRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef     = useRef<HTMLInputElement>(null);
 
   const placeholder = isThr ? 'Ketik nama atau pilih...' : 'Ketik kategori atau pilih...';
-  const addLabel = isThr ? 'nama' : 'kategori';
+  const addLabel    = isThr ? 'nama' : 'kategori';
 
   // Sync query when value changes externally (form reset)
   useEffect(() => { setQuery(value); }, [value]);
 
+  // ── Reposition ───────────────────────────────────────────────────────────────
+  // Gunakan visualViewport agar akurat saat keyboard mobile muncul
+  const reposition = useCallback(() => {
+    const el = inputWrapRef.current;
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+
+    // visualViewport lebih akurat di mobile (shrink saat keyboard naik)
+    const vp          = window.visualViewport;
+    const vpHeight    = vp ? vp.height    : window.innerHeight;
+    const vpOffsetTop = vp ? vp.offsetTop : 0;
+    const vpOffsetLeft= vp ? vp.offsetLeft: 0;
+
+    // Konversi rect ke koordinat visual viewport
+    const top    = rect.top    - vpOffsetTop;
+    const bottom = rect.bottom - vpOffsetTop;
+    const left   = rect.left   - vpOffsetLeft;
+
+    const dropH      = 208; // max-h-52 ≈ 208px
+    const gap        = 6;
+    const spaceBelow = vpHeight - bottom;
+
+    if (spaceBelow >= dropH + gap || spaceBelow >= top) {
+      setDropdownStyle({
+        position: 'fixed',
+        top:   bottom + gap,
+        left,
+        width: rect.width,
+        zIndex: 9999,
+      });
+    } else {
+      // Tidak cukup ruang di bawah — tampilkan di atas
+      setDropdownStyle({
+        position: 'fixed',
+        bottom:   vpHeight - top + gap,
+        left,
+        width:    rect.width,
+        zIndex:   9999,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    reposition();
+
+    window.addEventListener('scroll', reposition, true);
+    window.addEventListener('resize', reposition);
+
+    // visualViewport events — trigger saat keyboard HP muncul/hilang
+    const vp = window.visualViewport;
+    if (vp) {
+      vp.addEventListener('resize', reposition);
+      vp.addEventListener('scroll', reposition);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', reposition, true);
+      window.removeEventListener('resize', reposition);
+      if (vp) {
+        vp.removeEventListener('resize', reposition);
+        vp.removeEventListener('scroll', reposition);
+      }
+    };
+  }, [open, reposition]);
+
   // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (
-        inputWrapRef.current &&
-        !inputWrapRef.current.contains(e.target as Node)
-      ) {
+      if (inputWrapRef.current && !inputWrapRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
@@ -36,43 +101,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Reposition dropdown whenever it opens or window scrolls/resizes
-  useEffect(() => {
-    if (!open) return;
-    const position = () => {
-      const rect = inputWrapRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const dropH = 208; // max-h-52 ≈ 208px
-      if (spaceBelow >= dropH) {
-        // below
-        setDropdownStyle({
-          position: 'fixed',
-          top: rect.bottom + 6,
-          left: rect.left,
-          width: rect.width,
-          zIndex: 9999,
-        });
-      } else {
-        // above
-        setDropdownStyle({
-          position: 'fixed',
-          bottom: window.innerHeight - rect.top + 6,
-          left: rect.left,
-          width: rect.width,
-          zIndex: 9999,
-        });
-      }
-    };
-    position();
-    window.addEventListener('scroll', position, true);
-    window.addEventListener('resize', position);
-    return () => {
-      window.removeEventListener('scroll', position, true);
-      window.removeEventListener('resize', position);
-    };
-  }, [open]);
-
+  // ── Filter ───────────────────────────────────────────────────────────────────
   const filtered = useMemo(() =>
     query.trim()
       ? options.filter(p => p.name.toLowerCase().includes(query.toLowerCase()))
@@ -109,16 +138,24 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
           type="text"
           value={query}
           onChange={handleInput}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            setOpen(true);
+            // Delay reposition — beri waktu keyboard HP naik dulu (~300ms)
+            setTimeout(reposition, 300);
+          }}
           placeholder={placeholder}
-          className="w-full pl-8 pr-8 py-2 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="w-full pl-8 pr-8 py-2 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
         />
         <button
           type="button"
           tabIndex={-1}
           onClick={() => {
-            setOpen(o => !o);
-            if (!open) inputRef.current?.focus();
+            const next = !open;
+            setOpen(next);
+            if (next) {
+              inputRef.current?.focus();
+              setTimeout(reposition, 300);
+            }
           }}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
         >
@@ -126,7 +163,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
         </button>
       </div>
 
-      {/* Dropdown — rendered via fixed positioning to escape overflow:hidden parents */}
+      {/* Dropdown — fixed positioning agar tidak terpotong overflow parent */}
       <AnimatePresence>
         {open && (filtered.length > 0 || showCreateOption) && (
           <motion.ul
@@ -141,11 +178,8 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
               <li key={p.id}>
                 <button
                   type="button"
-                  onMouseDown={e => {
-                    e.preventDefault();
-                    handleSelect(p.name);
-                  }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors flex items-center gap-2 ${
+                  onMouseDown={e => { e.preventDefault(); handleSelect(p.name); }}
+                  className={`w-full text-left px-3 py-2.5 text-sm hover:bg-secondary transition-colors flex items-center gap-2 ${
                     query === p.name ? 'bg-primary/10 font-semibold text-primary' : ''
                   }`}
                 >
@@ -161,11 +195,8 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
               <li>
                 <button
                   type="button"
-                  onMouseDown={e => {
-                    e.preventDefault();
-                    handleSelect(query.trim());
-                  }}
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-secondary transition-colors flex items-center gap-2 text-primary font-semibold border-t border-foreground/10"
+                  onMouseDown={e => { e.preventDefault(); handleSelect(query.trim()); }}
+                  className="w-full text-left px-3 py-2.5 text-sm hover:bg-secondary transition-colors flex items-center gap-2 text-primary font-semibold border-t border-foreground/10"
                 >
                   <Plus className="h-3 w-3 shrink-0" />
                   Tambah {addLabel} "{query.trim()}"
