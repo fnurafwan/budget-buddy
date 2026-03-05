@@ -144,7 +144,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
             setTimeout(reposition, 300);
           }}
           placeholder={placeholder}
-          className="w-full pl-8 pr-8 py-2 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+          className="w-full pl-8 pr-8 py-2 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
         <button
           type="button"
