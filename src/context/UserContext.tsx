@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 export interface AppUser {
   id: string;
@@ -19,6 +19,9 @@ export const USERS: AppUser[] = [
 const PIN_STORAGE_KEY = (id: string) => `bujat_pin_${id}`;
 const SESSION_KEY = 'bujat_user_id';
 const HIDE_KEY    = 'bujat_hide_numbers';
+const THEME_KEY   = 'bujat_theme';
+
+type ThemeMode = 'light' | 'dark';
 
 const getPin = (userId: string): string =>
   localStorage.getItem(PIN_STORAGE_KEY(userId)) ?? DEFAULT_PINS[userId] ?? '';
@@ -27,9 +30,11 @@ const getPin = (userId: string): string =>
 interface UserContextValue {
   currentUser: AppUser | null;
   hideNumbers: boolean;
+  theme: ThemeMode;
   login: (pin: string) => boolean;
   logout: () => void;
   toggleHide: () => void;
+  toggleTheme: () => void;
   changePin: (userId: string, oldPin: string, newPin: string) => boolean;
 }
 
@@ -45,6 +50,19 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [hideNumbers, setHideNumbers] = useState(() =>
     localStorage.getItem(HIDE_KEY) === 'true'
   );
+
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    const saved = localStorage.getItem(THEME_KEY) as ThemeMode | null;
+    if (saved === 'dark' || saved === 'light') return saved;
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') root.classList.add('dark');
+    else root.classList.remove('dark');
+    localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
 
   const login = useCallback((pin: string): boolean => {
     const user = USERS.find(u => getPin(u.id) === pin);
@@ -67,6 +85,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     });
   }, []);
 
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
+
   // returns false if oldPin mismatch
   const changePin = useCallback((userId: string, oldPin: string, newPin: string): boolean => {
     if (getPin(userId) !== oldPin) return false;
@@ -75,7 +97,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ currentUser, hideNumbers, login, logout, toggleHide, changePin }}>
+    <UserContext.Provider value={{ currentUser, hideNumbers, theme, login, logout, toggleHide, toggleTheme, changePin }}>
       {children}
     </UserContext.Provider>
   );

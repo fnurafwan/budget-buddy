@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash2 } from 'lucide-react';
+import { ArrowLeft, Trash2, Sun, Moon } from 'lucide-react';
 import { useBudgetData } from '@/hooks/useBudgetData';
+import { useUser } from '@/context/UserContext';
 import type { ExpenseType } from '@/types/budget';
 
 import BudgetOverview from './BudgetOverview';
@@ -12,6 +13,7 @@ import TransactionHistory from './TransactionHistory';
 const BudgetDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useUser();
   const {
     budgets,
     expenses,
@@ -80,9 +82,18 @@ const BudgetDetail = () => {
           <button onClick={() => navigate('/')} className="flex items-center gap-2 font-bold text-sm hover:text-primary transition-colors">
             <ArrowLeft className="h-4 w-4" /> Back
           </button>
-          <button onClick={handleDelete} className="text-sm text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1.5">
-            <Trash2 className="h-4 w-4" /> Delete Budget
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              className="p-2.5 rounded-xl border-2 border-foreground/10 hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+            <button onClick={handleDelete} className="text-sm text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1.5">
+              <Trash2 className="h-4 w-4" /> Delete Budget
+            </button>
+          </div>
         </div>
       </header>
 

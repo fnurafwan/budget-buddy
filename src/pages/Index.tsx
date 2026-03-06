@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, LogOut, Eye, EyeOff,
   Search, X, ChevronDown, Lock, Plus,
-  KeyRound,
+  KeyRound, Sun, Moon,
 } from 'lucide-react';
 import { useBudgetData } from '@/hooks/useBudgetData';
 import { useUser, USERS } from '@/context/UserContext';
@@ -25,7 +25,7 @@ const Index = () => {
     getSummaryForUser,
   } = useBudgetData();
 
-  const { currentUser, hideNumbers, toggleHide, logout } = useUser();
+  const { currentUser, hideNumbers, theme, toggleHide, toggleTheme, logout } = useUser();
 
   // ── Filters ─────────────────────────────────────────────────────────────────
   const [filterUser, setFilterUser] = useState<string>(currentUser?.id ?? 'all');
@@ -76,6 +76,15 @@ const Index = () => {
           </div>
           
             <div className="flex items-center gap-2 shrink-0">
+
+              {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              className="p-2.5 rounded-xl border-2 border-foreground/10 hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
            {/* Ganti PIN */}
             <button
               onClick={() => setPinModalOpen(true)}
@@ -84,6 +93,8 @@ const Index = () => {
             >
               <KeyRound className="h-4 w-4" />
             </button>
+
+            
 
             {/* Logout */}
             <button

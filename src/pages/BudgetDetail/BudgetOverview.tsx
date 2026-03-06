@@ -405,21 +405,6 @@ const BudgetOverview = ({
                     </div>
                   </div>
 
-                  {/* Row 2: Type toggle */}
-                  <div>
-                    <Label className="font-semibold text-sm">Type</Label>
-                    <div className="flex gap-2 mt-1">
-                      <button type="button" onClick={() => setExpenseType('allocation')} className={`flex-1 rounded-xl px-3 py-2 text-sm font-bold border-2 transition-colors ${expenseType === 'allocation' ? 'bg-primary text-primary-foreground border-primary' : 'border-foreground/10 hover:bg-secondary'}`}>Allocation</button>
-                      <button type="button" onClick={() => setExpenseType('realization')} className={`flex-1 rounded-xl px-3 py-2 text-sm font-bold border-2 transition-colors ${expenseType === 'realization' ? 'bg-expense text-white border-expense' : 'border-foreground/10 hover:bg-secondary'}`}>Realization</button>
-                    </div>
-                  </div>
-
-                  {/* Row 3: Description */}
-                  <div>
-                    <Label className="font-semibold text-sm">Description</Label>
-                    <Input placeholder="Untuk apa ini?" value={description} onChange={e => setDescription(e.target.value)} className="rounded-xl border-2 border-foreground/10 mt-1" />
-                  </div>
-
                   {/* Row 4: Person / Kategori */}
                   <div>
                     <Label className="font-semibold text-sm">
@@ -434,6 +419,21 @@ const BudgetOverview = ({
                         isThr={isThr}
                       />
                     </div>
+                  </div>
+
+                  {/* Row 2: Type toggle */}
+                  <div>
+                    <Label className="font-semibold text-sm">Type</Label>
+                    <div className="flex gap-2 mt-1">
+                      <button type="button" onClick={() => setExpenseType('allocation')} className={`flex-1 rounded-xl px-3 py-2 text-sm font-bold border-2 transition-colors ${expenseType === 'allocation' ? 'bg-primary text-primary-foreground border-primary' : 'border-foreground/10 hover:bg-secondary'}`}>Allocation</button>
+                      <button type="button" onClick={() => setExpenseType('realization')} className={`flex-1 rounded-xl px-3 py-2 text-sm font-bold border-2 transition-colors ${expenseType === 'realization' ? 'bg-expense text-white border-expense' : 'border-foreground/10 hover:bg-secondary'}`}>Realization</button>
+                    </div>
+                  </div>
+
+                  {/* Row 3: Description */}
+                  <div>
+                    <Label className="font-semibold text-sm">Description</Label>
+                    <Input placeholder="Untuk apa ini?" value={description} onChange={e => setDescription(e.target.value)} className="rounded-xl border-2 border-foreground/10 mt-1" />
                   </div>
 
                   <div className="flex gap-2">

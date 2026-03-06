@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { User, ChevronDown, Plus, ChartBarStacked } from 'lucide-react';
 
@@ -12,83 +12,14 @@ export interface PersonComboboxProps {
 const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState(value);
-  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const inputWrapRef = useRef<HTMLDivElement>(null);
-  const inputRef     = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const placeholder = isThr ? 'Ketik nama atau pilih...' : 'Ketik kategori atau pilih...';
-  const addLabel    = isThr ? 'nama' : 'kategori';
+  const addLabel = isThr ? 'nama' : 'kategori';
 
   // Sync query when value changes externally (form reset)
   useEffect(() => { setQuery(value); }, [value]);
-
-  // ── Reposition ───────────────────────────────────────────────────────────────
-  // Gunakan visualViewport agar akurat saat keyboard mobile muncul
-  const reposition = useCallback(() => {
-    const el = inputWrapRef.current;
-    if (!el) return;
-
-    const rect = el.getBoundingClientRect();
-
-    // visualViewport lebih akurat di mobile (shrink saat keyboard naik)
-    const vp          = window.visualViewport;
-    const vpHeight    = vp ? vp.height    : window.innerHeight;
-    const vpOffsetTop = vp ? vp.offsetTop : 0;
-    const vpOffsetLeft= vp ? vp.offsetLeft: 0;
-
-    // Konversi rect ke koordinat visual viewport
-    const top    = rect.top    - vpOffsetTop;
-    const bottom = rect.bottom - vpOffsetTop;
-    const left   = rect.left   - vpOffsetLeft;
-
-    const dropH      = 208; // max-h-52 ≈ 208px
-    const gap        = 6;
-    const spaceBelow = vpHeight - bottom;
-
-    if (spaceBelow >= dropH + gap || spaceBelow >= top) {
-      setDropdownStyle({
-        position: 'fixed',
-        top:   bottom + gap,
-        left,
-        width: rect.width,
-        zIndex: 9999,
-      });
-    } else {
-      // Tidak cukup ruang di bawah — tampilkan di atas
-      setDropdownStyle({
-        position: 'fixed',
-        bottom:   vpHeight - top + gap,
-        left,
-        width:    rect.width,
-        zIndex:   9999,
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-
-    reposition();
-
-    window.addEventListener('scroll', reposition, true);
-    window.addEventListener('resize', reposition);
-
-    // visualViewport events — trigger saat keyboard HP muncul/hilang
-    const vp = window.visualViewport;
-    if (vp) {
-      vp.addEventListener('resize', reposition);
-      vp.addEventListener('scroll', reposition);
-    }
-
-    return () => {
-      window.removeEventListener('scroll', reposition, true);
-      window.removeEventListener('resize', reposition);
-      if (vp) {
-        vp.removeEventListener('resize', reposition);
-        vp.removeEventListener('scroll', reposition);
-      }
-    };
-  }, [open, reposition]);
 
   // Close on outside click
   useEffect(() => {
@@ -126,6 +57,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
     !options.some(p => p.name.toLowerCase() === query.trim().toLowerCase());
 
   return (
+    // `relative` here is the anchor — the dropdown positions itself against this div
     <div ref={inputWrapRef} className="relative">
       {/* Input */}
       <div className="relative">
@@ -138,11 +70,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
           type="text"
           value={query}
           onChange={handleInput}
-          onFocus={() => {
-            setOpen(true);
-            // Delay reposition — beri waktu keyboard HP naik dulu (~300ms)
-            setTimeout(reposition, 300);
-          }}
+          onFocus={() => setOpen(true)}
           placeholder={placeholder}
           className="w-full pl-8 pr-8 py-2 rounded-xl border-2 border-foreground/10 bg-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
@@ -152,10 +80,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
           onClick={() => {
             const next = !open;
             setOpen(next);
-            if (next) {
-              inputRef.current?.focus();
-              setTimeout(reposition, 300);
-            }
+            if (next) inputRef.current?.focus();
           }}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
         >
@@ -163,7 +88,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
         </button>
       </div>
 
-      {/* Dropdown — fixed positioning agar tidak terpotong overflow parent */}
+      {/* Dropdown — simple absolute, always below input, no JS repositioning */}
       <AnimatePresence>
         {open && (filtered.length > 0 || showCreateOption) && (
           <motion.ul
@@ -171,8 +96,7 @@ const PersonCombobox = ({ value, onChange, options, isThr }: PersonComboboxProps
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.15 }}
-            style={dropdownStyle}
-            className="bg-card border-2 border-foreground/10 rounded-xl shadow-2xl overflow-hidden max-h-52 overflow-y-auto"
+            className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-card border-2 border-foreground/10 rounded-xl shadow-2xl overflow-hidden max-h-52 overflow-y-auto"
           >
             {filtered.map(p => (
               <li key={p.id}>
