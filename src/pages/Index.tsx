@@ -73,7 +73,11 @@ const Index = () => {
             </div> */}
             <img src="/logo.png" alt="bujatbudget logo" className="w-10 h-10" />
             <div className='flex flex-col items-start gap-0'>
-              <h1 className="text-xl font-extrabold tracking-tight">BujatBudget</h1>
+              <h1 
+                className={`text-xl font-extrabold tracking-tight ${theme === 'dark' ? '' : 'text-primary'}`}
+              >
+                BujatBudget
+              </h1>
             {/* <p className='text-xs text-primary'>by samodoksync.com</p> */}
             </div>
           </div>
