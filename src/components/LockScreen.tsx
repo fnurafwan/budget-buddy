@@ -72,10 +72,11 @@ const LockScreen = () => {
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center gap-3 mb-10"
       >
-        <div className="p-2.5 rounded-xl bg-primary text-primary-foreground border-2 border-foreground/10">
+        {/* <div className="p-2.5 rounded-xl bg-primary text-primary-foreground border-2 border-foreground/10">
           <LayoutDashboard className="h-6 w-6" />
-        </div>
-        <h1 className="text-2xl font-extrabold tracking-tight">BujatBudget</h1>
+        </div> */}
+        <img src="/logo.png" alt="bujatbudget logo" className="w-10 h-10" />
+        <h1 className="text-2xl font-extrabold tracking-tight text-primary">BujatBudget</h1>
       </motion.div>
 
       <motion.div
@@ -157,7 +158,7 @@ const LockScreen = () => {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-8 opacity-50">
-          PIN 6 digit · tidak perlu username
+          by samodoksync.com
         </p>
       </motion.div>
     </div>
