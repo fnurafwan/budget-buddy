@@ -68,11 +68,14 @@ const Index = () => {
       <header className="border-b-2 border-foreground/10 bg-card sticky top-0 z-10">
         <div className="container max-w-5xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-primary text-primary-foreground border-2 border-foreground/10 shrink-0">
+            {/* <div className="p-2 rounded-xl bg-primary text-primary-foreground border-2 border-foreground/10 shrink-0">
               <LayoutDashboard className="h-5 w-5" />
+            </div> */}
+            <img src="/logo.png" alt="bujatbudget logo" className="w-10 h-10" />
+            <div className='flex flex-col items-start gap-0'>
+              <h1 className="text-xl font-extrabold tracking-tight">BujatBudget</h1>
+            <p className='text-xs text-primary'>by samodoksync.com</p>
             </div>
-            <h1 className="text-xl font-extrabold tracking-tight">BujatBudget</h1>
-
           </div>
           
             <div className="flex items-center gap-2 shrink-0">
