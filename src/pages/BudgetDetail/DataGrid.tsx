@@ -27,6 +27,7 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
   const [filterTag, setFilterTag]   = useState<string>('all');
   const { hideNumbers } = useUser();
   const masked = '••••••';
+  const [filterType, setFilterType] = useState<'all' | 'allocation' | 'realization'>('all');
 
   const tagLabel = isThr ? 'Person' : 'Kategori';
   const TagIcon  = isThr ? User : ChartBarStacked;
@@ -61,13 +62,17 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
         ? filtered.filter(e => !e.tag)
         : filtered.filter(e => e.tag === filterTag);
     }
+    if (filterType !== 'all') {
+      filtered = filtered.filter(e => e.type === filterType);
+    }
     return [...filtered].sort((a, b) => {
       if (sortKey === 'amount') return b.amount - a.amount;
       if (sortKey === 'date')   return new Date(b.date).getTime() - new Date(a.date).getTime();
       const order: FlagLevel[] = ['critical', 'warning', 'normal', 'low'];
       return order.indexOf(a.flag) - order.indexOf(b.flag);
     });
-  }, [enriched, sortKey, filterFlag, filterTag]);
+    
+  }, [enriched, sortKey, filterFlag, filterTag, filterType]);
 
   const flagCounts = useMemo(() => {
     const counts: Record<FlagLevel, number> = { critical: 0, warning: 0, normal: 0, low: 0 };
@@ -146,6 +151,25 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
             {k.charAt(0).toUpperCase() + k.slice(1)}
           </button>
         ))}
+
+        <span className="text-xs font-semibold text-muted-foreground shrink-0 ml-2">Type:</span>
+          {(['all', 'allocation', 'realization'] as const).map(t => (
+            <button
+              key={t}
+              onClick={() => setFilterType(t)}
+              className={`text-xs font-bold px-3 py-1 rounded-lg border transition-colors ${
+                filterType === t
+                  ? t === 'allocation'
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : t === 'realization'
+                    ? 'bg-expense text-white border-expense'
+                    : 'bg-primary text-primary-foreground border-primary'
+                  : 'border-foreground/10 hover:bg-secondary text-muted-foreground'
+              }`}
+            >
+              {t === 'all' ? 'All' : t === 'allocation' ? 'ALC' : 'REA'}
+            </button>
+          ))}
 
         {tagOptions.length > 0 && (
           <>
@@ -242,8 +266,10 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
             exit={{ opacity: 0 }}
             className="card-bordered rounded-2xl overflow-hidden"
           >
-            <div className="max-h-[60vh] overflow-y-auto overflow-x-auto">
-              <table className="w-full min-w-[520px]">
+            {/* <div className="max-h-[60vh] overflow-y-auto overflow-x-auto">
+              <table className="w-full min-w-[520px]"> */}
+            <div className="max-h-[60vh] overflow-y-auto overflow-x-auto relative">
+                <table className="w-full min-w-[520px] border-separate border-spacing-0">
                 <thead className="sticky top-0 bg-secondary/90 backdrop-blur z-10">
                   <tr className="bg-secondary/60 border-b-2 border-foreground/5">
                     <th className="text-center px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">No.</th>
@@ -316,6 +342,18 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                     );
                   })}
                 </tbody>
+                <tfoot className="sticky bottom-0 z-10">
+                  <tr className="border-t-2 border-foreground/10 bg-secondary/90 backdrop-blur">
+                    <td colSpan={6} className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-muted-foreground">
+                      Total ({sorted.length} items)
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm font-extrabold whitespace-nowrap text-foreground">
+                      {hideNumbers
+                        ? `Rp${masked}`
+                        : fmt(sorted.reduce((sum, e) => sum + e.amount, 0))}
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           </motion.div>
