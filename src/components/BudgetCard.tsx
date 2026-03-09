@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Budget } from '@/types/budget';
 import { CATEGORIES } from '@/types/budget';
 import type { LucideIcon } from 'lucide-react';
+import { getUsersConcated } from '@/context/UserContext';
 
 interface BudgetCardProps {
   budget: Budget;
@@ -22,7 +23,16 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
   const realPercent = useMemo(() => budget.allocatedAmount > 0 ? Math.min((realization / budget.allocatedAmount) * 100, 100) : 0, [realization, budget.allocatedAmount]);
   const category = CATEGORIES.find(c => c.value === budget.category);
   const IconComp = (icons[budget.icon as keyof typeof icons] as LucideIcon) || icons.CircleDollarSign;
-  const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+  // const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+  const fmt = (n: number) =>
+  n
+    .toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+    .replace(/\u00A0/, ' ');
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString("id-ID", {
       day: "2-digit",
@@ -41,19 +51,19 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
       onClick={() => navigate(`/budget/${budget.id}`)}
-      className="card-bordered rounded-2xl p-5 cursor-pointer hover:border-primary/40 transition-colors"
+      className="card-bordered rounded-2xl p-5 cursor-pointer hover:border-primary/40 transition-colors h-full flex flex-col"
     >
-      <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 rounded-xl bg-primary text-primary-foreground border-2 border-foreground/10">
-          <IconComp className="h-5 w-5" />
+        <div className="flex items-start gap-3 mb-4">
+          <div className="p-2.5 rounded-xl bg-primary text-primary-foreground border-2 border-foreground/10 shrink-0">
+            <IconComp className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="font-bold text-sm">{budget.title}</h3>
+            <span className="text-xs text-muted-foreground">{category?.label}</span>
+          </div>
         </div>
-        <div>
-          <h3 className="font-bold text-sm">{budget.title}</h3>
-          <span className="text-xs text-muted-foreground">{category?.label}</span>
-        </div>
-      </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-2.5 mt-auto">
         {/* Allocation bar */}
         <div>
           <div className="flex justify-between text-[10px] font-semibold mb-1">
@@ -90,7 +100,7 @@ export function BudgetCard({ budget, spent, allocation, realization, ownerName, 
         </div>
         <div className="flex justify-start items-center text-xs font-semibold pt-1 gap-1">
           <User className="h-3 w-3 text-muted-foreground shrink-0" />
-          <span className="text-muted-foreground">{ownerName ?? 'Debi & Wulan'}</span>
+          <span className="text-muted-foreground">{ownerName ?? getUsersConcated()}</span>
           <Clock className="h-3 w-3 text-muted-foreground shrink-0 ml-1" />
           <span className="text-muted-foreground">{formatDateTime(budget?.createdAt) ?? ''}</span>
         </div>

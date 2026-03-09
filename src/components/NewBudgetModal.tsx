@@ -40,7 +40,7 @@ export function NewBudgetModal({ onAdd }: NewBudgetModalProps) {
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div>
             <Label htmlFor="title" className="font-semibold">Title</Label>
-            <Input id="title" placeholder="e.g. Holiday Trip" value={title} onChange={e => setTitle(e.target.value)} className="rounded-xl border-2 border-foreground/10 mt-1" />
+            <Input id="title" placeholder="e.g. Daily Expenses" value={title} onChange={e => setTitle(e.target.value)} className="rounded-xl border-2 border-foreground/10 mt-1" />
           </div>
           <div>
             <Label htmlFor="amount" className="font-semibold">Allocated Amount (Rp)</Label>

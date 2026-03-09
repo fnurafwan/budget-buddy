@@ -60,5 +60,15 @@ export const FLAG_CONFIG: Record<FlagLevel, {
   },
 };
 
+// export const fmt = (n: number) =>
+//   n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+
 export const fmt = (n: number) =>
-  n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+  n
+    .toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+    .replace(/\u00A0/, ' ');

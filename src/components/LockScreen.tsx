@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Delete, LayoutDashboard } from 'lucide-react';
-import { useUser, USERS } from '@/context/UserContext';
+import { useUser, USERS, DEFAULT_PINS } from '@/context/UserContext';
 
 const NUMPAD = [
   ['1','2','3'],
@@ -10,11 +10,11 @@ const NUMPAD = [
   ['','0','⌫'],
 ];
 
-// Default PIN jika belum pernah diganti
-const DEFAULT_PINS: Record<string, string> = {
-  wulan: '111111',
-  debi:  '222222',
-};
+// // Default PIN jika belum pernah diganti
+// const DEFAULT_PINS: Record<string, string> = {
+//   wulan: '111111',
+//   debi:  '222222',
+// };
 
 const getStoredPin = (userId: string): string =>
   localStorage.getItem(`bujat_pin_${userId}`) ?? DEFAULT_PINS[userId] ?? '';
@@ -85,10 +85,10 @@ const LockScreen = () => {
         className="w-full max-w-xs"
       >
         {/* Title */}
-        <p className="text-center text-sm font-semibold text-muted-foreground mb-1">
+        <p className="text-center text-sm font-semibold text-muted-foreground mb-5">
           Masukkan PIN
         </p>
-        {hintUser ? (
+        {/* {hintUser ? (
           <p className="text-center text-base font-extrabold mb-6">
             Halo, {hintUser.name}! 👋
           </p>
@@ -96,7 +96,7 @@ const LockScreen = () => {
           <p className="text-center text-base font-extrabold mb-6 text-foreground/30">
             ——
           </p>
-        )}
+        )} */}
 
         {/* PIN dots */}
         <motion.div

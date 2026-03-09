@@ -9,7 +9,16 @@ interface SummaryCardsProps {
   hide?: boolean;
 }
 
-const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+// const fmt = (n: number) => n.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' });
+const fmt = (n: number) =>
+  n
+    .toLocaleString('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+    .replace(/\u00A0/, ' ');
 
 export function SummaryCards({ totalBudgeted, totalSpent, remaining }: SummaryCardsProps) {
   const percentSpent = useMemo(() => totalBudgeted > 0 ? Math.min((totalSpent / totalBudgeted) * 100, 100) : 0, [totalBudgeted, totalSpent]);

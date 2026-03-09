@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { fmt } from './flagUtils';
 import { useUser } from '@/context/UserContext';
+import { ChartBarStacked, User } from 'lucide-react';
 
 const DOODLE_COLORS = [
   { fill: '#e6194b', stroke: '#9e1233', light: 'rgba(230,25,75,0.12)' },
@@ -155,7 +156,7 @@ const DoodlePieChart = ({ expenses, isThr }: DoodlePieChartProps) => {
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');`}</style>
 
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-xl">{isThr ? '🖍️' : '📊'}</span>
+        <span className="text-xl">{isThr ? <User className="h-5 w-5 shrink-0 text-primary" /> : <ChartBarStacked className="h-5 w-5 shrink-0 text-primary" />}</span>
         <h2 className="text-lg font-extrabold" style={{ fontFamily: "'Caveat', cursive" }}>
           {chartLabel}
         </h2>

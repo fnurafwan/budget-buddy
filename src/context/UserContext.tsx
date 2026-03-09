@@ -6,7 +6,7 @@ export interface AppUser {
 }
 
 // PIN default — bisa diganti user, disimpan di localStorage per userId
-const DEFAULT_PINS: Record<string, string> = {
+export const DEFAULT_PINS: Record<string, string> = {
   wulan: '111111',
   debi:  '222222',
 };
@@ -15,6 +15,9 @@ export const USERS: AppUser[] = [
   { id: 'wulan', name: 'Wulan' },
   { id: 'debi',  name: 'Debi'  },
 ];
+
+export const getUsersConcated = () =>
+  USERS.map(u => u.name).join(' & ');
 
 const PIN_STORAGE_KEY = (id: string) => `bujat_pin_${id}`;
 const SESSION_KEY = 'bujat_user_id';
