@@ -270,15 +270,15 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
               <table className="w-full min-w-[520px]"> */}
             <div className="max-h-[60vh] overflow-y-auto overflow-x-auto relative">
                 <table className="w-full min-w-[520px] border-separate border-spacing-0">
-                <thead className="sticky top-0 bg-secondary/90 backdrop-blur z-10">
-                  <tr className="bg-secondary/60 border-b-2 border-foreground/5">
-                    <th className="text-center px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">No.</th>
-                    <th className="text-left px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Item</th>
-                    <th className="text-left px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">{tagLabel}</th>
-                    <th className="text-center px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Type</th>
-                    <th className="text-center px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Flag</th>
-                    <th className="text-right px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">% Budget</th>
-                    <th className="text-right px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">Amount</th>
+                <thead className="sticky top-0 z-30">
+                  <tr className="border-b-2 border-foreground/5">
+                    <th className="text-center px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground sticky left-0 z-30 bg-secondary after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">No.</th>
+                    <th className="text-left px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground sticky left-[44px] z-30 bg-secondary after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">Item</th>
+                    <th className="text-left px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground bg-secondary">{tagLabel}</th>
+                    <th className="text-center px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground bg-secondary">Type</th>
+                    <th className="text-center px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground bg-secondary">Flag</th>
+                    <th className="text-right px-3 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground bg-secondary">% Budget</th>
+                    <th className="text-right px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground bg-secondary">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -292,8 +292,8 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                         transition={{ delay: i * 0.03 }}
                         className="border-b border-foreground/5 last:border-0 hover:bg-secondary/40 transition-colors"
                       >
-                        <td className="px-4 py-3 text-center text-[10px] font-bold text-muted-foreground">{i + 1}</td>
-                        <td className="px-4 py-3 min-w-[140px]">
+                        <td className="px-4 py-3 text-center text-[10px] font-bold text-muted-foreground sticky left-0 z-10 bg-gray-50 after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">{i + 1}</td>
+                        <td className="px-4 py-3 min-w-[140px] sticky left-[44px] z-10 bg-gray-50 after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">
                           <p className="text-sm font-semibold">{exp.description}</p>
                           <p className="text-[10px] text-muted-foreground mt-0.5">
                             {new Date(exp.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
@@ -342,12 +342,14 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                     );
                   })}
                 </tbody>
-                <tfoot className="sticky bottom-0 z-10">
-                  <tr className="border-t-2 border-foreground/10 bg-secondary/90 backdrop-blur">
-                    <td colSpan={6} className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-muted-foreground">
+                <tfoot className="sticky bottom-0 z-30">
+                  <tr className="border-t-2 border-foreground/10">
+                    <td className="px-4 py-3 sticky left-0 z-30 bg-secondary" />
+                    <td className="px-4 py-3 text-xs font-extrabold uppercase tracking-widest text-muted-foreground sticky left-[44px] z-30 bg-secondary whitespace-nowrap after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">
                       Total ({sorted.length} items)
                     </td>
-                    <td className="px-4 py-3 text-right text-sm font-extrabold whitespace-nowrap text-foreground">
+                    <td colSpan={4} className="bg-secondary" />
+                    <td className="px-4 py-3 text-right text-sm font-extrabold whitespace-nowrap text-foreground bg-secondary">
                       {hideNumbers
                         ? `Rp${masked}`
                         : fmt(sorted.reduce((sum, e) => sum + e.amount, 0))}
