@@ -292,8 +292,8 @@ const DataGrid = ({ expenses, totalBudget, isThr }: DataGridProps) => {
                         transition={{ delay: i * 0.03 }}
                         className="border-b border-foreground/5 last:border-0 hover:bg-secondary/40 transition-colors"
                       >
-                        <td className="px-4 py-3 text-center text-[10px] font-bold text-muted-foreground sticky left-0 z-10 bg-gray-50 after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">{i + 1}</td>
-                        <td className="px-4 py-3 min-w-[140px] sticky left-[44px] z-10 bg-gray-50 after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">
+                        <td className="px-4 py-3 text-center text-[10px] font-bold text-muted-foreground sticky left-0 z-10 bg-card after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">{i + 1}</td>
+                        <td className="px-4 py-3 min-w-[140px] sticky left-[44px] z-10 bg-card after:absolute after:right-0 after:top-0 after:h-full after:w-px after:bg-foreground/10">
                           <p className="text-sm font-semibold">{exp.description}</p>
                           <p className="text-[10px] text-muted-foreground mt-0.5">
                             {new Date(exp.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
