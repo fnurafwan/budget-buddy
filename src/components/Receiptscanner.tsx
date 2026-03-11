@@ -403,6 +403,12 @@ const ReceiptScanner = ({ isThr, options, onConfirm, onClose }: ReceiptScannerPr
                             className="rounded-lg border-2 border-foreground/10 text-sm"
                             autoFocus
                           />
+                          <PersonCombobox
+                            value={item.tagName}
+                            onChange={v => updateItem(item.id, { tagName: v })}
+                            options={options}
+                            isThr={isThr}
+                          />
                           <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground pointer-events-none">Rp</span>
                             <CurrencyInput
@@ -412,12 +418,6 @@ const ReceiptScanner = ({ isThr, options, onConfirm, onClose }: ReceiptScannerPr
                               className="w-full pl-8 pr-3 py-2 text-sm rounded-lg border-2 border-foreground/10 bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                             />
                           </div>
-                          <PersonCombobox
-                            value={item.tagName}
-                            onChange={v => updateItem(item.id, { tagName: v })}
-                            options={options}
-                            isThr={isThr}
-                          />
                           <button
                             onClick={() => toggleEdit(item.id)}
                             className="w-full py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-bold flex items-center justify-center gap-1"

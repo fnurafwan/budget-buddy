@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, AlertTriangle, Eye, EyeOff, Pencil, X, Check, ScanLine } from 'lucide-react';
+import { Plus, AlertTriangle, Eye, EyeOff, Pencil, X, Check, ScanLine, ScanText } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { icons } from 'lucide-react';
@@ -325,7 +325,7 @@ const BudgetOverview = ({
                   : 'border-foreground/10 hover:bg-secondary text-muted-foreground hover:text-foreground'
               }`}
             >
-              <ScanLine className="h-4 w-4" />
+              {formMode === 'scan' ? <ScanLine className="h-4 w-4" /> : <ScanText className="h-4 w-4" /> }
               <span className="hidden sm:inline">Scan Struk</span>
             </button>
             {/* Manual */}
@@ -333,7 +333,7 @@ const BudgetOverview = ({
               onClick={() => setFormMode(formMode === 'manual' ? 'closed' : 'manual')}
               className="btn-primary rounded-xl px-4 py-2 font-bold text-sm flex items-center gap-2"
             >
-              <Plus className="h-4 w-4" />
+              {formMode === 'manual' ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
               <span>Add Expense</span>
             </button>
           </div>
@@ -352,15 +352,15 @@ const BudgetOverview = ({
                 <div className="card-accent rounded-2xl p-5 mb-4">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <ScanLine className="h-4 w-4 text-primary" />
+                      <ScanText className="h-4 w-4 text-primary" />
                       <span className="font-extrabold text-sm">Scan Struk / Invoice</span>
                     </div>
-                    <button
+                    {/* <button
                       onClick={resetForm}
                       className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground transition-colors text-sm font-bold"
                     >
                       ✕
-                    </button>
+                    </button> */}
                   </div>
                   <ReceiptScanner
                     isThr={isThr}
