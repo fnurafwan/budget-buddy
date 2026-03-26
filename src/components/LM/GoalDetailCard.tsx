@@ -432,9 +432,9 @@ export function GoalDetailCard({ hide }: GoalDetailCardProps) {
                         </span>
                       </td>
                       {/* Berat */}
-                      <td className="px-3 py-3 text-xs font-semibold">{t.weight} gr</td>
+                      <td className="px-3 py-3 text-xs font-semibold">{hideNumbers ? masked : t.weight} gr</td>
                       {/* Qty */}
-                      <td className="px-3 py-3 text-xs font-semibold">{t.qty} pcs</td>
+                      <td className="px-3 py-3 text-xs font-semibold">{hideNumbers ? masked : t.qty} pcs</td>
                       {/* Harga Beli */}
                       <td className="px-3 py-3 text-right text-xs font-semibold whitespace-nowrap">
                         {hideNumbers ? masked : fmt(t.pricePerPiece)}

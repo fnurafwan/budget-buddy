@@ -6,7 +6,7 @@ import { GoalDetailCard } from '@/components/LM/GoalDetailCard';
 
 export default function GoalDetail() {
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useUser();
+  const { theme, toggleTheme, } = useUser();
 
   return (
     <div className="min-h-screen bg-background lm-mode">

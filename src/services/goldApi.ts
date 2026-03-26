@@ -134,7 +134,7 @@ export async function fetchUbsPrices(): Promise<GoldPriceItem[]> {
     if (!response.ok) throw new Error("Gagal mengambil data proxy lokal UBS");
     
     const html = await response.text();
-    console.log("HTML UBS:", html.slice(0, 1000));
+    // console.log("HTML UBS:", html.slice(0, 1000));
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
 

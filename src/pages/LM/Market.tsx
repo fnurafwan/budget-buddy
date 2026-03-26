@@ -36,7 +36,7 @@ function LiveScrapedTable({ title, data, hasBuyback }: { title: string, data: Go
     if (data.length === 0) return <div className="p-8 text-center text-sm border rounded-lg bg-card text-muted-foreground"><Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />Loading {title}...</div>;
     return (
         <div className="rounded-lg border bg-card overflow-hidden">
-            <div className="p-3 border-b bg-muted/30"><h3 className="font-semibold text-sm">{title}</h3></div>
+            <div className={`p-3 border-b bg-muted/30 bg-primary ${title.includes('ANTAM') ? 'lm-mode' : ''}`}><h3 className="font-semibold text-sm">{title}</h3></div>
             <div className="overflow-x-auto max-h-[300px] overflow-y-auto">
                 <table className="w-full text-sm text-left">
                     <thead className="bg-muted/50 text-muted-foreground text-xs sticky top-0 backdrop-blur-md z-10">
@@ -90,12 +90,13 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 // Komponen Bar Chart Baru
 function GramPriceChart({ data, title }: { data: GoldPriceItem[]; title: string }) {
+    
     if (data.length === 0) return <div className="p-8 text-center text-sm border rounded-lg bg-card text-muted-foreground"><Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" />Loading {title}...</div>;
 
     const chartHeight = Math.max(350, data.length * 45);
 
     return (
-        <div className="rounded-lg border bg-card p-4">
+        <div className={`rounded-lg border bg-card p-4 ${title.includes('ANTAM') ? 'lm-mode' : ''}`}>
             <h3 className="font-semibold mb-1">{title}</h3>
             <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1.5"><span className="inline-block w-3 h-3 rounded-sm bg-primary/40" />Harga Jual</span>
@@ -170,6 +171,8 @@ export default function Market() {
 
     const buyPctANTM = prevData?.antamBuy || 0 ? ((liveData.antam1g - prevData?.antamBuy || 0) / prevData?.antamBuy || 0) * 100 : 0;
     const buyPctUBS = prevData?.ubsBuy || 0 ? ((liveData.ubs1g - prevData?.ubsBuy || 0) / prevData?.ubsBuy || 0) * 100 : 0;
+    const changesANTM = (liveData?.antam1g || 0) - (prevData?.antamBuy || 0);
+    const changesUBS = (liveData?.ubs1g || 0) - (prevData?.ubsBuy || 0);
 
     return (
         <div className="min-h-screen bg-background">
@@ -214,27 +217,27 @@ export default function Market() {
                         <div className='flex justify-between items-start'>
                             <div className="flex flex-col justify-start text-xs font-semibold pt-1">
                                 <span className="text-muted-foreground">Harga Beli ANTAM</span>
-                                <span className="text-foreground">{liveData.antam1g}</span>
+                                <span className="text-foreground">{fmt(liveData.antam1g)}</span>
                                 <span className={`${buyPctANTM >= 0 ? "text-success" : "text-destructive"} flex flex-row items-center`}>
-                                    {buyPctANTM >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {buyPctANTM.toFixed(2)}%
+                                    {buyPctANTM >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {`(${fmt(changesANTM)})`} {buyPctANTM.toFixed(2)}%
                                 </span>
                             </div>
                             <div className="flex flex-col justify-end text-end text-xs font-semibold pt-1">
                                 <span className="text-muted-foreground">Harga Jual ANTAM</span>
-                                <span className='text-foreground'>{liveData.antam1gBuyback}</span>
+                                <span className='text-foreground'>{fmt(liveData.antam1gBuyback)}</span>
                             </div>
                         </div>
                         <div className='flex justify-between items-start'>
                             <div className="flex flex-col justify-start text-xs font-semibold pt-1">
                                 <span className="text-muted-foreground">Harga Beli UBS</span>
-                                <span className="text-destructive">{liveData.ubs1g}</span>
+                                <span className="text-destructive">{fmt(liveData.ubs1g)}</span>
                                 <span className={`${buyPctUBS >= 0 ? "text-success" : "text-destructive"} flex flex-row items-center`}>
-                                    {buyPctUBS >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {buyPctUBS.toFixed(2)}%
+                                    {buyPctUBS >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {`(${fmt(changesUBS)})`} {buyPctUBS.toFixed(2)}%
                                 </span>
                             </div>
                             <div className="flex flex-col justify-end text-end text-xs font-semibold pt-1">
                                 <span className="text-muted-foreground">Harga Jual UBS</span>
-                                <span className='text-foreground'>{liveData.ubs1gBuyback}</span>
+                                <span className='text-foreground'>{fmt(liveData.ubs1gBuyback)}</span>
                             </div>
                         </div>
                     </div>
