@@ -23,6 +23,7 @@ const PIN_STORAGE_KEY = (id: string) => `bujat_pin_${id}`;
 const SESSION_KEY = 'bujat_user_id';
 const HIDE_KEY    = 'bujat_hide_numbers';
 const THEME_KEY   = 'bujat_theme';
+const LM_KEY      = 'bujat_lm';
 
 type ThemeMode = 'light' | 'dark';
 
@@ -34,11 +35,13 @@ interface UserContextValue {
   currentUser: AppUser | null;
   hideNumbers: boolean;
   theme: ThemeMode;
+  lmStatus: boolean;
   login: (pin: string) => boolean;
   logout: () => void;
   toggleHide: () => void;
   toggleTheme: () => void;
   changePin: (userId: string, oldPin: string, newPin: string) => boolean;
+  toggleLM: () => void;
 }
 
 const UserContext = createContext<UserContextValue | null>(null);
@@ -52,6 +55,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [hideNumbers, setHideNumbers] = useState(() =>
     localStorage.getItem(HIDE_KEY) === 'true'
+  );
+  
+  
+  const [lmStatus, setLMStatus] = useState(() =>
+    localStorage.getItem(LM_KEY) === 'true'
   );
 
   const [theme, setTheme] = useState<ThemeMode>(() => {
@@ -87,6 +95,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       return next;
     });
   }, []);
+  
+  const toggleLM = useCallback(() => {
+    setLMStatus(prev => {
+      const next = !prev;
+      localStorage.setItem(LM_KEY, String(next));
+      return next;
+    });
+  }, []);
 
   const toggleTheme = useCallback(() => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
@@ -100,7 +116,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ currentUser, hideNumbers, theme, login, logout, toggleHide, toggleTheme, changePin }}>
+    <UserContext.Provider value={{ currentUser, hideNumbers, theme, lmStatus, login, logout, toggleHide, toggleTheme, changePin, toggleLM }}>
       {children}
     </UserContext.Provider>
   );

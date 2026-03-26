@@ -9,6 +9,8 @@ import BudgetDetail from "./pages/BudgetDetail/BudgetDetail";
 import NotFound from "./pages/NotFound";
 import { UserProvider } from "./context/UserContext";
 import AuthGuard from "./pages/AuthGuard";
+import Market from "./pages/LM/Market";
+import GoalDetail from "./pages/LM/GoalDetail";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/budget/:id" element={<BudgetDetail />} />
+                <Route path="/market" element={<Market />} />
+                <Route path="/goaldetail/:id" element={<GoalDetail />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

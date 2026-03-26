@@ -109,7 +109,47 @@
     --sidebar-border: 20 12% 22%;
     --sidebar-ring: 270 60% 62%;
   }
+
+  
+/* ═══════════════════════════════════════════════════════════════════════════
+     GOLD THEME — aktif saat class .lm-mode ada di root div (lmStatus === true)
+     Light mode
+     ═══════════════════════════════════════════════════════════════════════════ */
+  .lm-mode {
+    --primary:              43 85% 45%;
+    --primary-foreground:   43 100% 97%;
+ 
+    --accent:               43 70% 92%;
+    --accent-foreground:    43 80% 25%;
+ 
+    --ring:                 43 85% 45%;
+ 
+    --sidebar-primary:      43 85% 45%;
+    --sidebar-primary-foreground: 43 100% 97%;
+    --sidebar-accent:       43 70% 92%;
+    --sidebar-accent-foreground:  43 80% 25%;
+    --sidebar-ring:         43 85% 45%;
+  }
+ 
+  /* ── Gold theme dark mode ── */
+  .dark .lm-mode {
+    --primary:              43 90% 52%;
+    --primary-foreground:   30 25% 8%;
+ 
+    --accent:               43 40% 20%;
+    --accent-foreground:    43 80% 75%;
+ 
+    --ring:                 43 90% 52%;
+ 
+    --sidebar-primary:      43 90% 52%;
+    --sidebar-primary-foreground: 30 25% 8%;
+    --sidebar-accent:       43 40% 20%;
+    --sidebar-accent-foreground:  43 80% 75%;
+    --sidebar-ring:         43 90% 52%;
+  }
 }
+
+
 
 @layer base {
   * {
