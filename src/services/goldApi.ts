@@ -28,16 +28,21 @@ function calculateAntamBuyback(weightGrams: number, basePrice: number): number {
 }
 
 const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const isDev = import.meta.env.DEV;
 
 export async function fetchAntamPrices(): Promise<GoldPriceItem[]> {
   // Kita scrape dua halaman sekaligus: Halaman Beli dan Halaman Jual (Buyback)
-  const proxyBuyUrl = isLocal 
-    ? '/api/antam/id/harga-emas-hari-ini' 
-    : '/api/proxy?target=' + encodeURIComponent('https://www.logammulia.com/id/harga-emas-hari-ini');
-    
-  const proxySellUrl = isLocal 
-    ? '/api/antam/id/sell/gold' 
-    : '/api/proxy?target=' + encodeURIComponent('https://www.logammulia.com/id/sell/gold');
+  const proxyBuyUrl = isDev
+  ? '/api/antam/id/harga-emas-hari-ini'
+  : '/api/proxy?target=' + encodeURIComponent(
+      'https://www.logammulia.com/id/harga-emas-hari-ini'
+    );
+
+const proxySellUrl = isDev
+  ? '/api/antam/id/sell/gold'
+  : '/api/proxy?target=' + encodeURIComponent(
+      'https://www.logammulia.com/id/sell/gold'
+    );
 
   try {
     const [buyRes, sellRes] = await Promise.all([
@@ -118,9 +123,11 @@ export async function fetchAntamPrices(): Promise<GoldPriceItem[]> {
 // ... [Fungsi fetchUbsPrices TETAP SAMA seperti kode sebelumnya] ...
 
 export async function fetchUbsPrices(): Promise<GoldPriceItem[]> {
-  const proxyUrl = isLocal 
-    ? '/api/ubs/harga-buyback-hari-ini/' 
-    : '/api/proxy?target=' + encodeURIComponent('https://ubslifestyle.com/harga-buyback-hari-ini/');
+  const proxyUrl = isDev
+    ? '/api/ubs/harga-buyback-hari-ini/' // vite proxy
+    : '/api/proxy?target=' + encodeURIComponent(
+        'https://ubslifestyle.com/harga-buyback-hari-ini/'
+      );
 
   try {
     const response = await fetch(proxyUrl);
