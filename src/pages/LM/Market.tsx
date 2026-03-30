@@ -130,6 +130,19 @@ export default function Market() {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { theme, toggleTheme } = useUser();
+    const now = new Date();
+
+    const today = now.toLocaleDateString('en-CA', {
+        timeZone: 'Asia/Jakarta'
+    });
+
+    const hourWIB = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Jakarta',
+        hour: 'numeric',
+        hour12: false
+    }).format(now);
+
+    const isAfter10AM = parseInt(hourWIB, 10) >= 10;
 
     useEffect(() => {
         async function loadMarket() {
@@ -139,7 +152,16 @@ export default function Market() {
                 const a1g = antam.find(p => p.weight.replace(/\s/g, '').toLowerCase() === '1gr');
                 const u1g = ubs.find(p => p.weight.replace(/\s/g, '').toLowerCase() === '1gram');
 
-                if (a1g && u1g) {
+                console.log(dbHistory);
+
+                const isTodayExist = dbHistory.some(item => item.date === today);
+                
+
+                console.log("today:", today);
+                console.log("already exist:", isTodayExist);
+                console.log("isAfter10AM:", isAfter10AM);
+
+                if (a1g && u1g && !isTodayExist && isAfter10AM) {
                     await saveTodayPrice({
                         antamBuy: a1g.buyPrice, antamBuyback: a1g.buybackPrice || 0,
                         ubsBuy: u1g.buyPrice, ubsBuyback: u1g.buybackPrice || 0
@@ -253,6 +275,9 @@ export default function Market() {
                                 </span>
                             </div>
                         </div>
+                        {!isAfter10AM && (
+                            <p className="text-xs text-muted-foreground pt-5">*Kemungkinan Masih Harga Kemarin. Harga diperbaharui setiap hari pukul 10:00 WIB.</p>
+                        )}
                     </div>
                 </motion.div>
 
