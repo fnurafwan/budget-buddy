@@ -123,7 +123,7 @@ export default {
 
     console.log("🔥 HIT:", url.pathname);
 
-    if (url.pathname === "/trigger-harga-update") {
+    if (url.pathname === "/api/trigger-harga-update") {
       await this.scheduled(null, env, ctx);
       return new Response("✅ Scheduled job selesai dijalankan", { status: 200 });
     }
