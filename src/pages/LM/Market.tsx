@@ -173,6 +173,11 @@ export default function Market() {
     const buyPctUBS = prevData?.ubsBuy || 0 ? ((liveData.ubs1g - prevData?.ubsBuy || 0) / prevData?.ubsBuy || 0) * 100 : 0;
     const changesANTM = (liveData?.antam1g || 0) - (prevData?.antamBuy || 0);
     const changesUBS = (liveData?.ubs1g || 0) - (prevData?.ubsBuy || 0);
+    
+    const buyBackPctANTM = prevData?.antamBuyback || 0 ? ((liveData.antam1gBuyback - prevData?.antamBuyback || 0) / prevData?.antamBuyback || 0) * 100 : 0;
+    const buyBackPctUBS = prevData?.ubsBuyback || 0 ? ((liveData.ubs1gBuyback - prevData?.ubsBuyback || 0) / prevData?.ubsBuyback || 0) * 100 : 0;
+    const changesBuyBackANTM = (liveData?.antam1gBuyback || 0) - (prevData?.antamBuyback || 0);
+    const changesBuyBackUBS = (liveData?.ubs1gBuyback || 0) - (prevData?.ubsBuyback || 0);
 
     return (
         <div className="min-h-screen bg-background">
@@ -219,12 +224,16 @@ export default function Market() {
                                 <span className="text-muted-foreground">Harga Beli ANTAM</span>
                                 <span className="text-foreground">{fmt(liveData.antam1g)}</span>
                                 <span className={`${buyPctANTM >= 0 ? "text-success" : "text-destructive"} flex flex-row items-center`}>
-                                    {buyPctANTM >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {`(${fmt(changesANTM)})`} {buyPctANTM.toFixed(2)}%
+                                    {buyPctANTM >= 0 ? "▲" : "▼"} {`(${fmt(changesANTM)})`} {buyPctANTM.toFixed(2)}%
+                                    {/* {buyPctANTM >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {`(${fmt(changesANTM)})`} {buyPctANTM.toFixed(2)}% */}
                                 </span>
                             </div>
                             <div className="flex flex-col justify-end text-end text-xs font-semibold pt-1">
                                 <span className="text-muted-foreground">Harga Jual ANTAM</span>
                                 <span className='text-foreground'>{fmt(liveData.antam1gBuyback)}</span>
+                                <span className={`${buyBackPctANTM >= 0 ? "text-success" : "text-destructive"} flex flex-row items-center`}>
+                                    {buyBackPctANTM >= 0 ? "▲" : "▼"} {`(${fmt(changesBuyBackANTM)})`} {buyBackPctANTM.toFixed(2)}%
+                                </span>
                             </div>
                         </div>
                         <div className='flex justify-between items-start'>
@@ -232,12 +241,16 @@ export default function Market() {
                                 <span className="text-muted-foreground">Harga Beli UBS</span>
                                 <span className="text-destructive">{fmt(liveData.ubs1g)}</span>
                                 <span className={`${buyPctUBS >= 0 ? "text-success" : "text-destructive"} flex flex-row items-center`}>
-                                    {buyPctUBS >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {`(${fmt(changesUBS)})`} {buyPctUBS.toFixed(2)}%
+                                    {buyPctUBS >= 0 ? "▲" : "▼"} {`(${fmt(changesUBS)})`} {buyPctUBS.toFixed(2)}%
+                                    {/* {buyPctUBS >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {`(${fmt(changesUBS)})`} {buyPctUBS.toFixed(2)}% */}
                                 </span>
                             </div>
                             <div className="flex flex-col justify-end text-end text-xs font-semibold pt-1">
                                 <span className="text-muted-foreground">Harga Jual UBS</span>
                                 <span className='text-foreground'>{fmt(liveData.ubs1gBuyback)}</span>
+                                <span className={`${buyBackPctUBS >= 0 ? "text-success" : "text-destructive"} flex flex-row items-center`}>
+                                    {buyBackPctUBS >= 0 ? "▲" : "▼"} {`(${fmt(changesBuyBackUBS)})`} {buyBackPctUBS.toFixed(2)}%
+                                </span>
                             </div>
                         </div>
                     </div>

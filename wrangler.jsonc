@@ -12,5 +12,12 @@
   },
   "compatibility_flags": [
     "nodejs_compat"
-  ]
+  ],
+  "triggers": {
+    "crons": ["0 3 * * *"]  // Setiap hari 08:00 WIB (01:00 UTC)
+  },
+  "vars": {
+    "FIREBASE_PROJECT_ID": "your-project-id"
+    // FIREBASE_API_KEY jangan di sini, pakai: wrangler secret put FIREBASE_API_KEY
+  }
 }
