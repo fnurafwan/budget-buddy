@@ -8,6 +8,7 @@ import {
   Banknote,
   ChartNoAxesCombined,
   Server,
+  GitCompareArrows,
 } from 'lucide-react';
 import { useBudgetData } from '@/hooks/useBudgetData';
 import { useUser, USERS } from '@/context/UserContext';
@@ -192,6 +193,13 @@ const Index = () => {
               </div>
               <div className="flex flex-row items-center justify-between gap-2 shrink-0">
                 <NewBudgetModal onAdd={handleAddBudget} />
+                <button
+                  onClick={() => navigate('/compare')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-foreground/10 hover:bg-secondary transition-colors text-sm font-bold text-muted-foreground hover:text-foreground"
+                >
+                  <GitCompareArrows className="h-4 w-4" />
+                  <span className="">Bandingkan</span>
+                </button>
               </div>
             </div>
 
