@@ -7,13 +7,13 @@ export interface AppUser {
 
 // PIN default — bisa diganti user, disimpan di localStorage per userId
 export const DEFAULT_PINS: Record<string, string> = {
-  wulan: '111111',
-  debi:  '222222',
+  noni: '111111',
+  nurafwan:  '222222',
 };
 
 export const USERS: AppUser[] = [
-  { id: 'wulan', name: 'Wulan' },
-  { id: 'debi',  name: 'Debi'  },
+  { id: 'noni', name: 'Noni' },
+  { id: 'nurafwan',  name: 'Nurafwam'  },
 ];
 
 export const getUsersConcated = () =>
