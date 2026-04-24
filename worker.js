@@ -64,9 +64,14 @@ export default {
 
       const antamList = parseAntamTable(buyHtml, sellHtml);
       const ubsList = parseUbsTable(ubsHtml);
+      
+      console.log("BUY HTML SAMPLE:", buyHtml.slice(0, 300));
+      console.log("SELL HTML SAMPLE:", sellHtml.slice(0, 300));
+      console.log("UBS HTML SAMPLE:", ubsHtml.slice(0, 300));
 
       console.log("antamList:", antamList);
       console.log("UbsList:", ubsList);
+
 
       const a1g = antamList.find(p => p.weight.replace(/\s/g, '').toLowerCase() === '1gr');
       const u1g = ubsList.find(p => p.weight.replace(/\s/g, '').toLowerCase() === '1gram');
