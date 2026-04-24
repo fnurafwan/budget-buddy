@@ -21,9 +21,16 @@ export default {
       try {
         const res = await fetch(targetUrl, {
           headers: {
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "text/html,application/xhtml+xml",
-            "Accept-Language": "id-ID,id;q=0.9",
+            // "User-Agent": "Mozilla/5.0",
+            // "Accept": "text/html,application/xhtml+xml",
+            // "Accept-Language": "id-ID,id;q=0.9",
+            // "Referer": targetUrl,
+            // "Origin": new URL(targetUrl).origin,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache",
             "Referer": targetUrl,
             "Origin": new URL(targetUrl).origin,
           },
