@@ -261,7 +261,7 @@ export default function Market() {
                         <div className='flex justify-between items-start'>
                             <div className="flex flex-col justify-start text-xs font-semibold pt-1">
                                 <span className="text-muted-foreground">Harga Beli UBS</span>
-                                <span className="text-destructive">{fmt(liveData.ubs1g)}</span>
+                                <span className="text-foreground">{fmt(liveData.ubs1g)}</span>
                                 <span className={`${buyPctUBS >= 0 ? "text-success" : "text-destructive"} flex flex-row items-center`}>
                                     {buyPctUBS >= 0 ? "▲" : "▼"} {`(${fmt(changesUBS)})`} {buyPctUBS.toFixed(2)}%
                                     {/* {buyPctUBS >= 0 ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />} {`(${fmt(changesUBS)})`} {buyPctUBS.toFixed(2)}% */}
