@@ -64,9 +64,13 @@ export default {
     try {
       const workerUrl = "https://budget-buddy.dwittamma19.workers.dev";
 
+      // const [{ buyHtml, sellHtml }, ubsHtml] = await Promise.all([
+      //   scrapeAntam(workerUrl),
+      //   scrapeUbs(workerUrl),
+      // ]);
       const [{ buyHtml, sellHtml }, ubsHtml] = await Promise.all([
-        scrapeAntam(workerUrl),
-        scrapeUbs(workerUrl),
+        scrapeAntam(),   // ← hapus parameter workerUrl
+        scrapeUbs(),     // ← hapus parameter workerUrl
       ]);
 
       const antamList = parseAntamTable(buyHtml, sellHtml);
@@ -102,27 +106,68 @@ export default {
   },
 };
 
-async function scrapeAntam(workerUrl) {
-  const buyUrl = `${workerUrl}/api/proxy?target=` +
-    encodeURIComponent('https://www.logammulia.com/id/harga-emas-hari-ini');
-  const sellUrl = `${workerUrl}/api/proxy?target=` +
-    encodeURIComponent('https://www.logammulia.com/id/sell/gold');
+// async function scrapeAntam(workerUrl) {
+//   const buyUrl = `${workerUrl}/api/proxy?target=` +
+//     encodeURIComponent('https://www.logammulia.com/id/harga-emas-hari-ini');
+//   const sellUrl = `${workerUrl}/api/proxy?target=` +
+//     encodeURIComponent('https://www.logammulia.com/id/sell/gold');
 
+//   const [buyRes, sellRes] = await Promise.all([
+//     fetch(buyUrl),
+//     fetch(sellUrl),
+//   ]);
+
+//   const buyHtml = await buyRes.text();
+//   const sellHtml = await sellRes.text();
+
+//   return { buyHtml, sellHtml };
+// }
+
+// async function scrapeUbs(workerUrl) {
+//   const url = `${workerUrl}/api/proxy?target=` +
+//     encodeURIComponent('https://ubslifestyle.com/harga-buyback-hari-ini/');
+//   const res = await fetch(url);
+//   return res.text();
+// }
+
+async function scrapeAntam() {
   const [buyRes, sellRes] = await Promise.all([
-    fetch(buyUrl),
-    fetch(sellUrl),
+    fetch('https://www.logammulia.com/id/harga-emas-hari-ini', {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Referer": "https://www.logammulia.com/",
+      }
+    }),
+    fetch('https://www.logammulia.com/id/sell/gold', {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Referer": "https://www.logammulia.com/",
+      }
+    }),
   ]);
 
-  const buyHtml = await buyRes.text();
-  const sellHtml = await sellRes.text();
-
-  return { buyHtml, sellHtml };
+  return {
+    buyHtml: await buyRes.text(),
+    sellHtml: await sellRes.text(),
+  };
 }
 
-async function scrapeUbs(workerUrl) {
-  const url = `${workerUrl}/api/proxy?target=` +
-    encodeURIComponent('https://ubslifestyle.com/harga-buyback-hari-ini/');
-  const res = await fetch(url);
+async function scrapeUbs() {
+  const res = await fetch('https://ubslifestyle.com/harga-buyback-hari-ini/', {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+      "Cache-Control": "no-cache",
+      "Referer": "https://ubslifestyle.com/",
+    }
+  });
   return res.text();
 }
 
