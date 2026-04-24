@@ -1,24 +1,173 @@
-async function scrapeAntam(workerUrl) {
-  const buyUrl = `${workerUrl}/api/proxy?target=` +
-    encodeURIComponent('https://www.logammulia.com/id/harga-emas-hari-ini');
-  const sellUrl = `${workerUrl}/api/proxy?target=` +
-    encodeURIComponent('https://www.logammulia.com/id/sell/gold');
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    
+    console.log("🔥 HIT:", url.pathname);
 
+    if (url.pathname === "/api/trigger-harga-update") {
+      console.log("🔥 MASUK FETCH:", url.pathname);
+      await this.scheduled(null, env, ctx);
+      return new Response("✅ Scheduled job selesai dijalankan", { status: 200 });
+    }
+
+    // 🔥 HANDLE API PROXY
+    if (url.pathname.startsWith("/api/proxy")) {
+      const targetUrl = url.searchParams.get("target");
+
+      if (!targetUrl) {
+        return new Response("❌ Missing target URL", { status: 400 });
+      }
+
+      try {
+        const res = await fetch(targetUrl, {
+          headers: {
+            // "User-Agent": "Mozilla/5.0",
+            // "Accept": "text/html,application/xhtml+xml",
+            // "Accept-Language": "id-ID,id;q=0.9",
+            // "Referer": targetUrl,
+            // "Origin": new URL(targetUrl).origin,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache",
+            "Referer": targetUrl,
+            "Origin": new URL(targetUrl).origin,
+          },
+        });
+
+        const html = await res.text();
+
+        return new Response(html, {
+          headers: {
+            "Content-Type": "text/html;charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+          },
+        });
+
+      } catch (err) {
+        return new Response("❌ Proxy error", { status: 500 });
+      }
+    }
+
+    // ✅ fallback ke SPA
+    // return env.ASSETS.fetch(request);
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request);
+    }
+
+    return new Response("Not Found", { status: 404 });
+  },
+
+  // Cron scheduler
+  async scheduled(event, env, ctx) {
+    try {
+      const workerUrl = "https://budget-buddy.dwittamma19.workers.dev";
+
+      // const [{ buyHtml, sellHtml }, ubsHtml] = await Promise.all([
+      //   scrapeAntam(workerUrl),
+      //   scrapeUbs(workerUrl),
+      // ]);
+      const [{ buyHtml, sellHtml }, ubsHtml] = await Promise.all([
+        scrapeAntam(),   // ← hapus parameter workerUrl
+        scrapeUbs(),     // ← hapus parameter workerUrl
+      ]);
+
+      const antamList = parseAntamTable(buyHtml, sellHtml);
+      const ubsList = parseUbsTable(ubsHtml);
+      
+      console.log("BUY HTML SAMPLE:", buyHtml.slice(0, 300));
+      console.log("SELL HTML SAMPLE:", sellHtml.slice(0, 300));
+      console.log("UBS HTML SAMPLE:", ubsHtml.slice(0, 300));
+
+      console.log("antamList:", antamList);
+      console.log("UbsList:", ubsList);
+
+
+      const a1g = antamList.find(p => p.weight.replace(/\s/g, '').toLowerCase() === '1gr');
+      const u1g = ubsList.find(p => p.weight.replace(/\s/g, '').toLowerCase() === '1gram');
+
+      if (!a1g || !u1g) {
+        console.warn("⚠️ Data 1gr tidak ditemukan");
+        return;
+      }
+
+      await saveToFirestore(env, {
+        antamBuy:     a1g.buyPrice,
+        antamBuyback: a1g.buybackPrice || 0,
+        ubsBuy:       u1g.buyPrice,
+        ubsBuyback:   u1g.buybackPrice || 0,
+      });
+
+      console.log(`✅ Harga tersimpan: ${new Date().toISOString().split("T")[0]}`);
+    } catch (err) {
+      console.error("❌ Error:", err);
+    }
+  },
+};
+
+// async function scrapeAntam(workerUrl) {
+//   const buyUrl = `${workerUrl}/api/proxy?target=` +
+//     encodeURIComponent('https://www.logammulia.com/id/harga-emas-hari-ini');
+//   const sellUrl = `${workerUrl}/api/proxy?target=` +
+//     encodeURIComponent('https://www.logammulia.com/id/sell/gold');
+
+//   const [buyRes, sellRes] = await Promise.all([
+//     fetch(buyUrl),
+//     fetch(sellUrl),
+//   ]);
+
+//   const buyHtml = await buyRes.text();
+//   const sellHtml = await sellRes.text();
+
+//   return { buyHtml, sellHtml };
+// }
+
+// async function scrapeUbs(workerUrl) {
+//   const url = `${workerUrl}/api/proxy?target=` +
+//     encodeURIComponent('https://ubslifestyle.com/harga-buyback-hari-ini/');
+//   const res = await fetch(url);
+//   return res.text();
+// }
+
+async function scrapeAntam() {
   const [buyRes, sellRes] = await Promise.all([
-    fetch(buyUrl),
-    fetch(sellUrl),
+    fetch('https://www.logammulia.com/id/harga-emas-hari-ini', {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Referer": "https://www.logammulia.com/",
+      }
+    }),
+    fetch('https://www.logammulia.com/id/sell/gold', {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Cache-Control": "no-cache",
+        "Referer": "https://www.logammulia.com/",
+      }
+    }),
   ]);
 
-  const buyHtml = await buyRes.text();
-  const sellHtml = await sellRes.text();
-
-  return { buyHtml, sellHtml };
+  return {
+    buyHtml: await buyRes.text(),
+    sellHtml: await sellRes.text(),
+  };
 }
 
-async function scrapeUbs(workerUrl) {
-  const url = `${workerUrl}/api/proxy?target=` +
-    encodeURIComponent('https://ubslifestyle.com/harga-buyback-hari-ini/');
-  const res = await fetch(url);
+async function scrapeUbs() {
+  const res = await fetch('https://ubslifestyle.com/harga-buyback-hari-ini/', {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+      "Cache-Control": "no-cache",
+      "Referer": "https://ubslifestyle.com/",
+    }
+  });
   return res.text();
 }
 
@@ -98,6 +247,8 @@ function parseUbsTable(html) {
 async function saveToFirestore(env, price) {
   const today = new Date().toISOString().split("T")[0];
   const url = `https://firestore.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/databases/(default)/documents/priceHistory/${today}?key=${env.FIREBASE_API_KEY}`;
+  
+  // console.log("🔥 PROJECT ID:", env.FIREBASE_PROJECT_ID);
 
   const res = await fetch(url, {
     method: "PATCH",
@@ -117,85 +268,3 @@ async function saveToFirestore(env, price) {
   return res.json();
 }
 
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-
-    console.log("🔥 HIT:", url.pathname);
-
-    if (url.pathname === "/api/trigger-harga-update") {
-      await this.scheduled(null, env, ctx);
-      return new Response("✅ Scheduled job selesai dijalankan", { status: 200 });
-    }
-
-    // 🔥 HANDLE API PROXY
-    if (url.pathname.startsWith("/api/proxy")) {
-      const targetUrl = url.searchParams.get("target");
-
-      if (!targetUrl) {
-        return new Response("❌ Missing target URL", { status: 400 });
-      }
-
-      try {
-        const res = await fetch(targetUrl, {
-          headers: {
-            "User-Agent": "Mozilla/5.0",
-            "Accept": "text/html,application/xhtml+xml",
-            "Accept-Language": "id-ID,id;q=0.9",
-            "Referer": targetUrl,
-            "Origin": new URL(targetUrl).origin,
-          },
-        });
-
-        const html = await res.text();
-
-        return new Response(html, {
-          headers: {
-            "Content-Type": "text/html;charset=UTF-8",
-            "Access-Control-Allow-Origin": "*",
-          },
-        });
-
-      } catch (err) {
-        return new Response("❌ Proxy error", { status: 500 });
-      }
-    }
-
-    // ✅ fallback ke SPA
-    return env.ASSETS.fetch(request);
-  },
-
-  // Cron scheduler
-  async scheduled(event, env, ctx) {
-    try {
-      const workerUrl = "https://bujatbugdet.samodoksync.com";
-
-      const [{ buyHtml, sellHtml }, ubsHtml] = await Promise.all([
-        scrapeAntam(workerUrl),
-        scrapeUbs(workerUrl),
-      ]);
-
-      const antamList = parseAntamTable(buyHtml, sellHtml);
-      const ubsList = parseUbsTable(ubsHtml);
-
-      const a1g = antamList.find(p => p.weight.replace(/\s/g, '').toLowerCase() === '1gr');
-      const u1g = ubsList.find(p => p.weight.replace(/\s/g, '').toLowerCase() === '1gram');
-
-      if (!a1g || !u1g) {
-        console.warn("⚠️ Data 1gr tidak ditemukan");
-        return;
-      }
-
-      await saveToFirestore(env, {
-        antamBuy:     a1g.buyPrice,
-        antamBuyback: a1g.buybackPrice || 0,
-        ubsBuy:       u1g.buyPrice,
-        ubsBuyback:   u1g.buybackPrice || 0,
-      });
-
-      console.log(`✅ Harga tersimpan: ${new Date().toISOString().split("T")[0]}`);
-    } catch (err) {
-      console.error("❌ Error:", err);
-    }
-  },
-};

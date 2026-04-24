@@ -210,3 +210,143 @@ budget-buddy
 └─ wrangler.jsonc
 
 ```
+```
+budget-buddy
+├─ bun.lockbbak
+├─ components.json
+├─ eslint.config.js
+├─ functions
+│  └─ api
+│     └─ proxy.js
+├─ index.html
+├─ package.json
+├─ postcss.config.js
+├─ public
+│  ├─ apple-touch.png
+│  ├─ favicon.ico
+│  ├─ favicon.png
+│  ├─ icon.png
+│  ├─ logo.png
+│  ├─ placeholder.svg
+│  └─ robots.txt
+├─ README.md
+├─ src
+│  ├─ App.css
+│  ├─ App.tsx
+│  ├─ components
+│  │  ├─ BudgetCard.tsx
+│  │  ├─ ChangePinModal.tsx
+│  │  ├─ CurrencyInput.tsx
+│  │  ├─ LM
+│  │  │  ├─ DashboardCard.tsx
+│  │  │  ├─ GoalDetailCard.tsx
+│  │  │  ├─ GoalsCard.tsx
+│  │  │  └─ NewGoalModal.tsx
+│  │  ├─ LockScreen.tsx
+│  │  ├─ NavLink.tsx
+│  │  ├─ NewBudgetModal.tsx
+│  │  ├─ Receiptscanner.tsx
+│  │  ├─ SummaryCards.tsx
+│  │  └─ ui
+│  │     ├─ accordion.tsx
+│  │     ├─ alert-dialog.tsx
+│  │     ├─ alert.tsx
+│  │     ├─ aspect-ratio.tsx
+│  │     ├─ avatar.tsx
+│  │     ├─ badge.tsx
+│  │     ├─ breadcrumb.tsx
+│  │     ├─ button.tsx
+│  │     ├─ calendar.tsx
+│  │     ├─ card.tsx
+│  │     ├─ carousel.tsx
+│  │     ├─ chart.tsx
+│  │     ├─ checkbox.tsx
+│  │     ├─ collapsible.tsx
+│  │     ├─ command.tsx
+│  │     ├─ context-menu.tsx
+│  │     ├─ dialog.tsx
+│  │     ├─ drawer.tsx
+│  │     ├─ dropdown-menu.tsx
+│  │     ├─ form.tsx
+│  │     ├─ hover-card.tsx
+│  │     ├─ input-otp.tsx
+│  │     ├─ input.tsx
+│  │     ├─ label.tsx
+│  │     ├─ menubar.tsx
+│  │     ├─ navigation-menu.tsx
+│  │     ├─ pagination.tsx
+│  │     ├─ popover.tsx
+│  │     ├─ progress.tsx
+│  │     ├─ radio-group.tsx
+│  │     ├─ resizable.tsx
+│  │     ├─ scroll-area.tsx
+│  │     ├─ select.tsx
+│  │     ├─ separator.tsx
+│  │     ├─ sheet.tsx
+│  │     ├─ sidebar.tsx
+│  │     ├─ skeleton.tsx
+│  │     ├─ slider.tsx
+│  │     ├─ sonner.tsx
+│  │     ├─ switch.tsx
+│  │     ├─ table.tsx
+│  │     ├─ tabs.tsx
+│  │     ├─ textarea.tsx
+│  │     ├─ toast.tsx
+│  │     ├─ toaster.tsx
+│  │     ├─ toggle-group.tsx
+│  │     ├─ toggle.tsx
+│  │     ├─ tooltip.tsx
+│  │     └─ use-toast.ts
+│  ├─ context
+│  │  ├─ BudgetContext.tsx
+│  │  └─ UserContext.tsx
+│  ├─ env.development
+│  ├─ env.production
+│  ├─ hooks
+│  │  ├─ use-mobile.tsx
+│  │  ├─ use-toast.ts
+│  │  ├─ useBudgetData.ts
+│  │  └─ useBudgetData.tsbak
+│  ├─ index.css
+│  ├─ lib
+│  │  ├─ firebase.ts
+│  │  ├─ firebase_lm.ts
+│  │  └─ utils.ts
+│  ├─ main.tsx
+│  ├─ pages
+│  │  ├─ AuthGuard.tsx
+│  │  ├─ BudgetDetail
+│  │  │  ├─ BudgetDetail.tsx
+│  │  │  ├─ BudgetOverview.tsx
+│  │  │  ├─ DataGrid.tsx
+│  │  │  ├─ DoodlePieChart.tsx
+│  │  │  ├─ flagUtils.ts
+│  │  │  ├─ PersonCombobox.tsx
+│  │  │  └─ TransactionHistory.tsx
+│  │  ├─ BudgetDetail.tsxbak
+│  │  ├─ CompareBudgets.tsx
+│  │  ├─ Index.tsx
+│  │  ├─ LM
+│  │  │  ├─ GoalDetail.tsx
+│  │  │  └─ Market.tsx
+│  │  └─ NotFound.tsx
+│  ├─ services
+│  │  ├─ db.ts
+│  │  └─ goldApi.ts
+│  ├─ test
+│  │  ├─ example.test.ts
+│  │  └─ setup.ts
+│  ├─ types
+│  │  ├─ budget.ts
+│  │  └─ goals.ts
+│  └─ vite-env.d.ts
+├─ tailwind.config.ts
+├─ tsconfig.app.json
+├─ tsconfig.json
+├─ tsconfig.node.json
+├─ vite.config.ts
+├─ vitest.config.ts
+├─ worker.js
+└─ wrangler.jsonc
+
+```

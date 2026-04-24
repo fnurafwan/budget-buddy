@@ -8,7 +8,8 @@
   "main": "worker.js",
   "assets": {
     "directory": "dist",
-    "not_found_handling": "single-page-application"
+    // "not_found_handling": "single-page-application"
+    "not_found_handling": "none"
   },
   "compatibility_flags": [
     "nodejs_compat"
@@ -17,7 +18,7 @@
     "crons": ["0 3 * * *"]  // Setiap hari 08:00 WIB (01:00 UTC)
   },
   "vars": {
-    "FIREBASE_PROJECT_ID": "your-project-id"
+    "FIREBASE_PROJECT_ID": "pereleman-9202b"
     // FIREBASE_API_KEY jangan di sini, pakai: wrangler secret put FIREBASE_API_KEY
-  }
+  },
 }
